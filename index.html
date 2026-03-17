@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kooner LM Dashboard — WK11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #F8F9FA; color: #1A1A2E; font-family: 'DM Sans', system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #E9ECEF; }
+  ::-webkit-scrollbar-thumb { background: #ADB5BD; border-radius: 3px; }
+  table { border-spacing: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+function StationSummaryTable({ data, c }) {
+  const [sortCol, setSortCol] = useState("medTat");
+  const [sortDir, setSortDir] = useState("asc");
+  const handleSort = col => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("asc"); }
+  };
+  const sorted = [...data].sort((a,b) => {
+    const av = a[sortCol] ?? (sortDir==="asc"?Infinity:-Infinity);
+    const bv = b[sortCol] ?? (sortDir==="asc"?Infinity:-Infinity);
+    return sortDir === "asc" ? av - bv : bv - av;
+  });
+  const cols = [
+    { key:"station",  label:"Station",       align:"left",  fmt: v => v,                                  color: () => null },
+    { key:"wos",      label:"WOs",           align:"right", fmt: v => v,                                  color: v => v===0 ? c.red : v>=40 ? c.green : null },
+    { key:"medTat",   label:"Med TAT",       align:"right", fmt: v => v!=null ? v+"d" : "—",              color: v => v==null ? c.red : v<=1 ? c.green : v<=2 ? c.amber : c.red },
+    { key:"avgTat",   label:"Avg TAT",       align:"right", fmt: v => v!=null ? v+"d" : "—",              color: v => v==null ? c.red : v<=2 ? c.green : v<=4 ? c.amber : c.red },
+    { key:"smR",      label:"SM Resched",    align:"right", fmt: v => v,                                  color: v => v>=10 ? c.red : v>=5 ? c.amber : null },
+    { key:"transfer", label:"Transfer Fail", align:"right", fmt: v => v,                                  color: v => v>=15 ? c.red : v>=8 ? c.amber : null },
+  ];
+  const SortArrow = ({col}) => {
+    if (sortCol !== col) return React.createElement("span", {style:{color:c.textMuted,marginLeft:3,opacity:0.4}}, "↕");
+    return React.createElement("span", {style:{color:c.purple,marginLeft:3}}, sortDir==="asc"?"↑":"↓");
+  };
+  return (
+    <>
+      <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:"1px solid "+c.borderLight }}>
+        <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Network Summary</span>
+        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:"1px solid "+c.purpleBorder }}>WK11 · Click column to sort</span>
+      </div>
+      <div style={{ background:c.card,border:"1px solid "+c.border,borderRadius:12,overflow:"auto",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",marginBottom:12 }}>
+        <table style={{ width:"100%",borderCollapse:"collapse",minWidth:600 }}>
+          <thead>
+            <tr>
+              {cols.map(col => (
+                <th key={col.key} onClick={() => handleSort(col.key)} style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,padding:"12px 16px",textAlign:col.align,background:c.elevated,borderBottom:"1px solid "+c.border,cursor:"pointer",userSelect:"none",whiteSpace:"nowrap" }}>
+                  {col.label}<SortArrow col={col.key}/>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((s,i) => {
+              const statusColor  = s.medTat==null ? c.red : s.medTat<=1 ? c.green : s.medTat<=2 ? c.amber : c.red;
+              const statusLabel  = s.medTat==null ? "NO COVERAGE" : s.medTat<=1 ? "ON TARGET" : s.medTat<=2 ? "WATCH" : "CRITICAL";
+              const statusBg     = s.medTat==null ? c.redBg : s.medTat<=1 ? c.greenBg : s.medTat<=2 ? c.amberBg : c.redBg;
+              const statusBorder = s.medTat==null ? "#FECACA" : s.medTat<=1 ? "#A7F3D0" : s.medTat<=2 ? "#FDE68A" : "#FECACA";
+              return (
+                <tr key={s.station} style={{ borderLeft:"3px solid "+statusColor }}>
+                  <td style={{ padding:"11px 16px",borderBottom:"1px solid "+c.borderLight }}>
+                    <div style={{ display:"flex",alignItems:"center",gap:8 }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:700,color:statusColor }}>{s.station}</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:3,background:statusBg,color:statusColor,border:"1px solid "+statusBorder }}>{statusLabel}</span>
+                    </div>
+                  </td>
+                  {cols.slice(1).map(col => {
+                    const val = s[col.key];
+                    const fmtVal = col.fmt(val);
+                    const cellColor = col.color(val);
+                    return (
+                      <td key={col.key} style={{ padding:"11px 16px",borderBottom:"1px solid "+c.borderLight,textAlign:col.align,fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:cellColor?700:500,color:cellColor||c.text }}>
+                        {fmtVal}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr style={{ background:c.elevated }}>
+              <td style={{ padding:"10px 16px",fontSize:11,fontWeight:700,color:c.textMuted,borderTop:"1px solid "+c.border }}>NETWORK</td>
+              <td style={{ padding:"10px 16px",textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:700,color:c.purple,borderTop:"1px solid "+c.border }}>{data.reduce((a,s)=>a+s.wos,0)}</td>
+              <td style={{ padding:"10px 16px",textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:c.textMuted,borderTop:"1px solid "+c.border }}>—</td>
+              <td style={{ padding:"10px 16px",textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:c.textMuted,borderTop:"1px solid "+c.border }}>—</td>
+              <td style={{ padding:"10px 16px",textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:700,color:c.textMuted,borderTop:"1px solid "+c.border }}>{data.reduce((a,s)=>a+s.smR,0)}</td>
+              <td style={{ padding:"10px 16px",textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:700,color:c.textMuted,borderTop:"1px solid "+c.border }}>{data.reduce((a,s)=>a+s.transfer,0)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div style={{ fontSize:11,color:c.textMuted,marginBottom:4 }}>
+        Color coding: <span style={{color:c.red,fontWeight:600}}>Red</span> = critical · <span style={{color:c.amber,fontWeight:600}}>Amber</span> = watch · <span style={{color:c.green,fontWeight:600}}>Green</span> = on target. SM Resched: red ≥10, amber ≥5. Transfer Fail: red ≥15, amber ≥8.
+      </div>
+    </>
+  );
+}
+
+const WEEKS = ["WK05","WK06","WK07","WK08","WK09","WK10","WK11"];
+
+const KPI_DATA = [
+  { id: "vorr",         name: "VORR %",                  category: "completion", target: 88,   targetLabel: "> 88%",    lowerBetter: false, slide: "Slide 4", owner: "Ash", suffix: "%",  informational: true,  values: [74.36, 75.84, 76.68, 76.25, 77.63, 79.10, null] },
+  { id: "adoption",     name: "Adoption %",              category: "completion", target: 85,   targetLabel: "> 85%",    lowerBetter: false, slide: "Slide 4", owner: "Ash", suffix: "%",  internalTarget: true, values: [42,    46,    48,    40,    49,    69,    54] },
+  { id: "atat_overall", name: "Avg TAT — Overall",       category: "efficiency", target: 2,    targetLabel: "< 2 days", lowerBetter: true,  slide: "Slide 6", owner: "Ash",              values: [2.39,  2.58,  3.34,  3.95,  2.90,  2.00,  1.91] },
+  { id: "atat_cargo",   name: "Avg TAT — Cargo Vehicle", category: "efficiency", target: 2,    targetLabel: "< 2 days", lowerBetter: true,  slide: "Slide 6", owner: "Ash",              values: [2.68,  2.33,  1.65,  4.05,  2.60,  1.57,  1.82] },
+  { id: "atat_box",     name: "Avg TAT — Box Truck",     category: "efficiency", target: 2,    targetLabel: "< 2 days", lowerBetter: true,  slide: "Slide 6", owner: "Ash",              values: [2.12,  2.76,  4.36,  3.88,  3.08,  2.61,  1.96] },
+  { id: "backlog",      name: "M-F Backlog Burndown",    category: "efficiency", target: 1,    targetLabel: "< 1 day",  lowerBetter: true,  slide: "Slide 7", owner: "Ash",              values: [4.44,  3.92,  5.09,  5.66,  3.60,  2.24,  3.77] },
+  { id: "weekend",      name: "Weekend Deficit",          category: "efficiency", target: 85,   targetLabel: "> 85%",    lowerBetter: false, slide: "Slide 7", owner: "Ash", suffix: "%",  values: [100,   23.1,  62.2,  153.8, 37.5,  110.0, 220.0] },
+  { id: "vendor",       name: "Vendor Rejection Rate",   category: "quality",    target: 0,    targetLabel: "< 0%",     lowerBetter: true,  slide: "Slide 8", owner: "Ash/Alberto", suffix: "%", values: [1.2, 1.9, 0.8, 2.5, 1.8, 1.2, 1.9] },
+];
+
+const INFO_METRICS = {
+  "WOs Created":     [{ type: "Cargo Vehicle", val: 42, wow: "+13" }, { type: "Box Truck", val: 25, wow: "-31" }],
+  "WOs Completed":   [{ type: "Cargo Vehicle", val: 24, wow: "-31" }, { type: "Box Truck", val: 38, wow: "-1" }],
+  "Backlog / Burn":  [{ type: "Delta (Created vs Completed)", val: "+37", wow: null }, { type: "M-F Burndown", val: "3.77d", wow: "+1.53d" }],
+  "Other Metrics":   [{ type: "Repair Rate (T14D)", val: "11", wow: "-14" }, { type: "Live Stations", val: "11", wow: "0" }, { type: "Weekend Deficit", val: "220%", wow: "+110%" }],
+};
+
+const ACTIONS = [
+  { id: 1, name: "HCL2 second tech — offer accepted, ~3/25 onboard. 16 SM reschedulings in WK11 (highest in network). Avg TAT 4.39d. Eugene cross-covering. This is the single highest-impact hire in the network right now.", kpi: "M-F Backlog Burndown / Avg TAT — Box Truck", owner: "David / Ash", slide: "Slide 5", due: "3/25", status: "In Progress", priority: "Critical", priorWeek: "Carried", impact: "HCL2 solo capacity is the primary driver of both the backlog burndown regression and elevated Box Truck avg TAT. 16 SM reschedulings signal that Owens is at or past capacity ceiling. Eugene's cross-coverage (14 WOs) is the bridge — but HCL2 needs its own second tech to sustain." },
+  { id: 2, name: "Backlog Burndown regression — 2.24d → 3.77d (+1.53d WoW). Investigate HDY1 aged WO cluster and HMK4 median regression. Confirm whether regression is transient or structural.", kpi: "M-F Backlog Burndown", owner: "David / Ash", slide: "Slide 7", due: "3/18", status: "In Progress", priority: "Critical", priorWeek: "New", impact: "Best-ever WK10 burndown gave way to sharp regression. HCL2 capacity is the structural cause. HDY1 avg TAT at 4.23d vs 1.32d median points to a small cluster of aged WOs — triage these specifically. HMK4 regression from 0.72d → 2.53d median needs a root cause: dispatch pattern, WO mix, or access issue." },
+  { id: 3, name: "Adoption regression — 69% → 54% (-15pp WoW). Identify whether WK10 spike was timing/backlog catch-up or genuine. HPD1 and HIN3 zero WOs continue to drag network average.", kpi: "Adoption %", owner: "Ash / Brooke", slide: "Slide 4", due: "3/18", status: "In Progress", priority: "Critical", priorWeek: "New", impact: "WK10's 69% surge likely included backlogged DSP submissions catching up. WK11 at 54% may represent the truer baseline. HPD1 (zero WOs, all 7 leaked to JDTC) and HIN3 (zero WOs, 7 leaked to JBXL) are structural drags. Removing both from the network calculation, remaining station adoption is materially higher — but resolution requires tech coverage." },
+  { id: 4, name: "Vendor Rejection Rate — Kooner Tech Team integration config pushed to production. ISS go-live station by station. Rate ticked back to 1.90% this week.", kpi: "Vendor Rejection Rate", owner: "Brooke / Hunter Davis (Amazon)", slide: "Slide 7", due: "3/25", status: "In Progress", priority: "High", priorWeek: "Carried", impact: "Root cause confirmed: Kooner Tech Team integration config not in production. Ramnik Singh acknowledged 3/11, Hunter Davis provided written approval same day. Kooner Tech Team pushed to production 3/16. Rejection rate should begin declining station by station as ISS rolls out." },
+  { id: 5, name: "HDY1 second tech — open req active. Aged WO cluster present (avg 4.23d vs 1.32d median). Night shift producing but solo coverage cannot sustain through backlog.", kpi: "M-F Backlog Burndown / Avg TAT — Overall", owner: "David", slide: "Slide 4", due: "3/31", status: "In Progress", priority: "High", priorWeek: "Carried", impact: "Burgess is solo with night shift active. Median TAT is good at 1.32d — throughput is happening. The avg TAT problem is a small number of aged WOs that need individual triage. Open req actively fielding. Second tech is the structural fix; individual WO escalation is the near-term bridge." },
+  { id: 6, name: "HPD1 coverage — zero Kooner WOs for multiple consecutive weeks. JDTC routing 100% externally (7 WOs in WK11). Emergency intervention required.", kpi: "Adoption %", owner: "David / Brooke", slide: "Slide 4", due: "3/18", status: "Not Started", priority: "Critical", priorWeek: "New", impact: "HPD1 has produced 0 Kooner WOs in WK11 and near-zero across recent weeks. JDTC is the sole DSP and they are routing everything externally. No tech coverage in Portland is the root blocker. Options: subcontract tech, hire, or escalate to Amazon to confirm whether this station is still expected to be served by Kooner." },
+];
+
+const COMPLETED_ACTIONS = [
+  { id: "C1", name: "TAT Overall worsening trend (WK08 — 3.95d avg)", completed: "WK10", result: "HIT: 3.95d → 2.90d (WK09) → 2.00d (WK10) → 1.91d (WK11). Three consecutive improvements. Now sustaining below target." },
+  { id: "C2", name: "Cargo Vehicle TAT recovery (WK08 — 4.05d avg)", completed: "WK10", result: "HIT: 4.05d → 1.57d (WK10) → 1.82d (WK11). Slight uptick but still within target. Monitoring." },
+  { id: "C3", name: "Weekend Deficit collapse (WK09 — 37.5%)", completed: "WK10", result: "HIT: 37.5% → 110% (WK10) → 220% (WK11). Fully recovered and expanding. Saturday assignments locked." },
+  { id: "C4", name: "Box Truck TAT above 2d target (WK10 — 2.61d)", completed: "WK11", result: "HIT: 2.61d → 1.96d (WK11). First time Box Truck TAT is below 2d target. TAT Overall, Cargo, and Box all on target simultaneously for first time." },
+  { id: "C5", name: "HHO3 part holds — WO-4E7K and WO-46X0 escalation", completed: "WK09", result: "Improved: part ETAs confirmed. WOs closed. Vendor rejection rate improved 1.8% → 1.2%." },
+  { id: "C6", name: "Duplicate WO research — IT collaboration at HTP2 and HCL2", completed: "WK10", result: "Progress: Vendor Rejection 1.8% → 1.2% WoW. Still a MISS but sustained improvement trajectory. IT fix ongoing." },
+  { id: "C7", name: "Backlog Burndown — shift change and HHO3 escalation", completed: "WK10", result: "Improved: 3.60d → 2.24d (-1.36d WoW). Best reading in tracked window. Regressed WK11 — see open action." },
+];
+
+const AMAZON_ASKS = [
+  { id: "A1", ask: "Closed Loop Clarity — Expectation Alignment & Fee Structure for Vended Work", submitted: "3/3/26", owner: "Brooke / Hunter Davis (Amazon)", status: "In Progress", priority: "High", notes: "Brooke opened formal conversation 3/3 via email to Vishal (Amazon). Hunter Davis responded 3/5 confirming: (1) DSPs instructed to use Kooner for all mechanical repairs; (2) when Kooner cannot complete, expectation is Kooner coordinates vendor and manages all aspects; (3) closed loop stations confirmed — HJX2 removed per Hunter correction. HCL2, HSF2, HMK4 not yet closed loop but planned with future tech enhancements. Brokerage fee of 15% proposed by Brooke — back in Amazon's court pending Vishal response on fee structure and contract amendment items." },
+  { id: "A2", ask: "Parts Delivery Support — Station Team Notification When Connex Stock Orders Arrive", submitted: "3/4/26", owner: "Ash / Amazon Ops", status: "In Progress", priority: "High", notes: "Initial Connex stock orders did not make it to the Connex at several stations. Amazon station team support needed to ensure Kooner is notified when a delivery with our name on it arrives on site. Next step: Kooner to draft SOP for delivery stations outlining the process to ensure Kooner-addressed parts deliveries make it to the Connex." },
+];
+
+const ESCALATIONS = [
+  // WK11 (Mar 8–14)
+  { id: "HTP2-ORM-652854", date: "3/12/2026", week: "WK11", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "Trevon Williams", status: "Closed", respSla: true, resSla: true,
+    summary: "Same truck opened 4 WOs over 2 weeks for automatic regen failure / PM Level High / CEL. Root cause (auto-regen disabled) never confirmed addressed. No communication on completion of any WO. Vehicle went into limp mode on route.",
+    detail: "4 WOs: forced regen/CEL cleared (2/26) · auto-regen check requested, zero response (3/5) · CEL/PM High (3/8) · CEL/PM High again (3/12). Escalated because root cause was never resolved across 4 attempts." },
+  { id: "HTP2-ORM-703914", date: "3/12/2026", week: "WK11", station: "HTP2", dsp: "ORMP", category: "Communication Issue",   owner: "Trevon Williams", status: "Closed", respSla: true, resSla: true,
+    summary: "4 WOs submitted previous day missing from daily pending list. Kooner unresponsive in Chime. Includes a documented quality error: wrong interior light installed, non-motion-activated, draining batteries on VIN 1FDDF6P82MKA55246.",
+    detail: "VINs: 5PVNJ8JT2L5S59879, 5PVNJ8JT9L5S59667, 5PVNJ8AT2M5T50233 (bumper replacement) · 1FDDF6P82MKA55246 (wrong light installed — stay-on draining battery, ORMP unplugged it)." },
+  { id: "HTP2-ORM-074281", date: "3/12/2026", week: "WK11", station: "HTP2", dsp: "ORMP", category: "Communication Issue",   owner: "Trevon Williams", status: "Closed", respSla: true, resSla: true,
+    summary: "DOT inspection completed but documentation returned was not a DOT inspection — only stated vehicle was checked for leaks. ORMP unable to get clarification; Kooner unresponsive.",
+    detail: "DOT paperwork issue flagged multiple times since the prior day. Kooner did not respond in Chime." },
+  { id: "HTP2-ORM-198479", date: "3/5/2026",  week: "WK10", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "Trevon Williams", status: "Closed", respSla: true, resSla: true,
+    summary: "WO opened for cabin air filter. Paperwork returned was entirely about body work — unrelated to the WO. No mention of the actual repair. Zero communication explaining the mismatch.",
+    detail: "ORMP opened WO for cabin air filter service. Kooner returned paperwork about body shop referral with no mention of the filter WO." },
+  // Pre-WK11 (context / pattern)
+  { id: "HTP2-ORM-831262", date: "3/4/2026",  week: "WK10", station: "HTP2", dsp: "ORMP", category: "Communication Issue",   owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "Doser PM overdue — disappeared from daily pending list. No paperwork, no communication that work was completed. Kooner unresponsive in Chime.",
+    detail: "Doser PM appeared on daily list then vanished. No completion confirmation received." },
+  { id: "HTP2-ORM-628851", date: "3/4/2026",  week: "WK10", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "DOT inspection submitted previous day not on daily pending list. Daily list frequently inaccurate — ORMP flags this as a systemic issue. Kooner unresponsive when queried.",
+    detail: "ORMP explicitly noted daily list is 'usually not accurate and missing WOs' and Kooner rarely responds when asked about it." },
+  { id: "HTP2-ORM-665920", date: "3/4/2026",  week: "WK10", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "WO opened 2/19 for camera issue + marker lights — only marker lights were fixed, camera not addressed. WO reopened 2/27, still missing from daily list. No response in Chime.",
+    detail: "Partial completion: marker lights fixed, camera issue ignored. Reopened WO not acknowledged." },
+  { id: "HTP2-ORM-911417", date: "3/4/2026",  week: "WK10", station: "HTP2", dsp: "ORMP", category: "Communication Issue",   owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "Doser PM overdue — ASAP urgency. Appeared on daily list then disappeared. No paperwork, no response in Chime.",
+    detail: "Second doser PM escalation in the same day as HTP2-ORM-831262." },
+  { id: "HDT3-SFR-951880", date: "2/28/2026", week: "WK09", station: "HDT3", dsp: "SFRM", category: "Process Question/Concern", owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "Vehicle down 8 days for a door repair. SFRM flagged this as unacceptable TAT for what should be a straightforward repair.",
+    detail: "Door repair TAT of 8 days. 1 attachment submitted with the escalation." },
+  { id: "HTP2-ORM-786582", date: "2/24/2026", week: "WK09", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "Backup camera WO opened 5 days prior with no resolution. ORMP assessed as a simple fuse replacement.",
+    detail: "5-day elapsed time on a backup camera repair ORMP believed required only a fuse." },
+  { id: "HTP2-ORM-306619", date: "2/24/2026", week: "WK09", station: "HTP2", dsp: "ORMP", category: "Quality of Work",      owner: "David Ross", status: "Closed", respSla: true, resSla: true,
+    summary: "Corner cap lights WO opened 5 days prior with no resolution.",
+    detail: "5-day elapsed time on a lighting repair." },
+];
+
+const BRIDGES = [
+  { kpi: "Avg TAT — Overall ✅ HIT",
+    rootCause: "",
+    action: "What's working: HLA2 throughput (54 WOs, 0.69d avg), HDT3 consistency (1.26d), HSL1 surge week (1.19d). HCL2 second tech onboarding will remove the last remaining drag on this KPI. Protect by keeping night shift at HDY1 active and maintaining current dispatch discipline at volume stations.",
+    returnTarget: "At target (1.91d). Sustain current operating model. HCL2 second tech arrival expected to push avg further below 2d." },
+  { kpi: "Avg TAT — Cargo Vehicle ✅ HIT",
+    rootCause: "",
+    action: "What's working: HSL1 cargo surge (18 WOs, 0.45d med) and HDT3 cargo consistency (16 WOs, 1.26d avg) are anchoring this KPI. Marcos Tun's solo performance at HSL1 is the standout. Maintain current staffing and dispatch patterns at cargo-heavy stations.",
+    returnTarget: "At target (1.82d). Sustain. No corrective action needed — monitor HAU1 cargo volume which dropped to zero this week." },
+  { kpi: "Avg TAT — Box Truck ✅ HIT",
+    rootCause: "",
+    action: "What's working: HAU1 (39 box WOs, 1.85d avg) and HLA2 (46 box WOs, 0.69d avg) are carrying box truck performance. First time this KPI has hit target. Protect by advancing HCL2 second tech onboarding — HCL2's 4.39d avg on 30 WOs is the only structural risk to sustaining this hit.",
+    returnTarget: "At target (1.96d). Sustain. HCL2 second tech arrival (~3/25) will further reduce the network avg." },
+  { kpi: "M-F Backlog Burndown 🔴 MISS",
+    rootCause: "Two primary drivers: (1) HCL2 SM reschedulings at the highest single-station reading in tracked history — volume is outpacing solo capacity and cross-coverage combined. (2) HDY1 has a small cluster of aged WOs pulling the average well above median — not being cleared with solo coverage.",
+    action: "HCL2 second tech (~3/25) is the primary corrective action for the structural capacity gap. Eugene cross-coverage is the bridge until then. For HDY1 — identify the specific WOs driving avg above median (likely 2–3 aged WOs) and determine if they are parts holds, access issues, or complexity. Escalate those individually. HMK4 median regression to 2.53d also needs investigation.",
+    returnTarget: "WK12 — HDY1 aged WO triage + HCL2 volume stabilization = path back toward 3d or below. WK13 with HCL2 second tech onboard = path toward sub-2d." },
+  { kpi: "Weekend Deficit ✅ HIT",
+    rootCause: "",
+    action: "What's working: Saturday assignments are locked in and producing. 35 weekend completions out of 286 total WOs (12.2%). Two consecutive weeks above target confirms this is structural, not a bounce. Lock in WK12 weekend assignments as permanent schedule.",
+    returnTarget: "At target (220%). Sustain structured Saturday assignments network-wide." },
+  { kpi: "Vendor Rejection Rate 🔴 MISS",
+    rootCause: "The Kooner Tech Team direct integration was not yet pushed to production — work requests routing through the old intake method continued to auto-reject. This is a Kooner Tech Team configuration issue, now resolved.",
+    action: "Direct integration went live 3/16. Rejections related to intake method should be eliminated in WK12 as DSPs route through the live integration. Monitor station by station as ISS rolls out and confirm DSPs have stopped using Smartsheets.",
+    returnTarget: "WK12 — integration live as of 3/16. Expect rejection rate to drop materially. Any remaining rejections after WK12 should be investigated as non-intake-related root causes." },
+];
+
+const PATTERNS = [
+  { icon: "🎯", title: "All Three TAT KPIs On Target Simultaneously — Network First", text: "WK11 marks the first time Overall (1.91d), Cargo (1.82d), and Box Truck (1.96d) are all below the 2d target in the same week. Box Truck hit target for the first time in the tracked window (-0.65d WoW). This is a structural milestone — the network is operating at target TAT.", color: "#059669" },
+  { icon: "📈", title: "Weekend Deficit 220% — Strongest Reading on Record", text: "Weekend completions accelerating: 37.5% (WK09) → 110% (WK10) → 220% (WK11). Saturday assignments are now locked in as permanent schedule. 35 weekend completions out of 286 total WOs — the operating model is fully validated.", color: "#059669" },
+  { icon: "⚠️", title: "Adoption Regression — 69% → 54% (-15pp WoW)", text: "The largest single-week adoption drop on record immediately follows the largest single-week gain. The WK10 surge to 69% likely included backlogged DSP submissions catching up. WK11 giving back 15pp suggests the baseline is closer to mid-50s. HPD1 (0 WOs) and HIN3 (0 WOs) continue to drag the network average. Root cause investigation required before WBR.", color: "#DC2626" },
+  { icon: "🔴", title: "Backlog Burndown Regression — 2.24d → 3.77d", text: "Best-ever burndown in WK10 gave way to sharp regression. HCL2 SM reschedulings at 16 — highest single-station reading in tracked history — is the primary driver. HDY1 aging WOs contributing. HCL2 second tech arrival is the direct fix. This metric will not sustain improvement with solo coverage at two Box Truck-heavy stations.", color: "#D97706" },
+];
+
+const STATION_DATA = [
+  { station:"HLA2", wos:54,  cargo:2,  box:46, tractor:6,  medTat:0.41, avgTat:0.69,  smR:17, transfer:1,  color:"#10B981", issue:"Network leader in WO volume (54 WOs) with best-in-network avg TAT (0.69d). Madrigal 30 WOs, Darter 14, Alexander 9, Thompson 1. SM reschedulings elevated at 17 — highest in network. Leakage report shows 11 leaked WOs with ARMA accounting for 9.", parts:"PM-dominant week. Top systems: PM/Inspection (36 touches), Electrical (14), Engine/CEL (10). Fleet is in reasonable condition." },
+  { station:"HHO3", wos:41,  cargo:0,  box:31, tractor:10, medTat:0.76, avgTat:2.05,  smR:1,  transfer:8,  color:"#10B981", issue:"Strong performance rebound — 19 WOs (WK10) → 41 WOs (WK11). Salas 20 WOs, Noriega 14, Henderson 7. Median TAT solid at 0.76d. Avg inflated by outlier. No leakage in WK11.", parts:"Brakes and Engine/CEL are the leading repair systems. Consistent with ongoing brake system work. Audit Connex brake stock." },
+  { station:"HAU1", wos:39,  cargo:0,  box:39, tractor:0,  medTat:0.89, avgTat:1.85,  smR:1,  transfer:15, color:"#10B981", issue:"Strong week — 30 → 39 WOs. Cruz 34 WOs (med 0.64d), Lawson 5 WOs. SM reschedulings dropped to 1 (from 3). Transfer failures remain elevated at 15 — pattern warrants investigation. 6 leaked WOs, top DSP GMIL (4).", parts:"HVAC and Electrical are emerging systems. Transfer failure rate disproportionate to WO volume — investigate dispatching pattern." },
+  { station:"HDT3", wos:31,  cargo:16, box:13, tractor:2,  medTat:0.53, avgTat:1.26,  smR:9,  transfer:3,  color:"#10B981", issue:"Strong TAT — med 0.53d, avg 1.26d. Lucas 18 WOs, McRoberts 13. New tech started ~3/16 — first week of ramp-up. 9 leaked WOs all attributable to SFRM. SM reschedulings at 9 — watch.", parts:"PM/Inspection dominant but parts consumption elevated — investigate whether specific repair types are driving activity." },
+  { station:"HCL2", wos:30,  cargo:0,  box:30, tractor:0,  medTat:2.49, avgTat:4.39,  smR:16, transfer:5,  color:"#EF4444", issue:"CRITICAL — SM reschedulings at 16, highest single-station reading in tracked history. Avg TAT 4.39d on 30 WOs. Owens 16 WOs (med 3.46d), Eugene cross-covering 14 WOs (med 1.58d). Second tech onboarding in progress (~3/25). 5 leaked WOs, D4DS top DSP (3).", parts:"Transmission and Brakes are recurring systems. High SM rescheduling count suggests work is being attempted and deferred, not skipped." },
+  { station:"HSL1", wos:23,  cargo:18, box:5,  tractor:0,  medTat:0.45, avgTat:1.19,  smR:2,  transfer:0,  color:"#10B981", issue:"Best week in recent tracked window — 4 WOs (WK10) → 23 WOs (WK11). Tun 23 WOs, med 0.45d. Zero transfer failures. Zero leakage this week.", parts:"PM-dominant. Cargo-heavy fleet profile — transmission consumables are standard stock need." },
+  { station:"HTP2", wos:23,  cargo:1,  box:5,  tractor:17, medTat:1.19, avgTat:1.41,  smR:7,  transfer:4,  color:"#10B981", issue:"Volume dip — 58 → 23 WOs. Rodriguez 15 WOs, Wallace 7, Ross 1. TAT solid at med 1.19d. SM reschedulings at 7 — elevated. Zero leakage this week.", parts:"Tractor fleet PM dominant. Volume drop may reflect backlog clearing in prior weeks." },
+  { station:"HDY1", wos:22,  cargo:0,  box:22, tractor:0,  medTat:1.32, avgTat:4.23,  smR:2,  transfer:7,  color:"#F59E0B", issue:"Median improving (1.17d WK10 → 1.32d WK11) but avg TAT jumped to 4.23d — large gap between median and avg indicates aged WO cluster. Burgess 22 WOs solo. Open req active. 3 leaked WOs, TLGZ top DSP (2).", parts:"Inspect-dominant but some repair activity. Identify and triage the specific WOs pulling avg TAT to 4.23d — likely 2–3 aged WOs." },
+  { station:"HMK4", wos:13,  cargo:0,  box:13, tractor:0,  medTat:2.53, avgTat:2.83,  smR:2,  transfer:4,  color:"#EF4444", issue:"Median TAT regressed to 2.53d (from 0.72d WK10) — moved from amber to critical. Fernandez 13 WOs. Zero leakage. No clear single cause — investigate whether workload mix or dispatch patterns have changed.", parts:"PM-dominant, zero repair replacements. TAT regression without an obvious repair complexity driver — likely a scheduling or access issue." },
+  { station:"HCT2", wos:7,   cargo:0,  box:4,  tractor:3,  medTat:1.38, avgTat:1.56,  smR:2,  transfer:1,  color:"#10B981", issue:"Volume drop — 35 → 7 WOs. Eugene (14 WOs) now primarily cross-covering HCL2. Harvey 7 WOs at HCT2. TAT solid at 1.38d median. Zero leakage.", parts:"Brake and transmission work consistent. Elevated activity per call relative to WO volume." },
+  { station:"HMS2", wos:3,   cargo:0,  box:2,  tractor:1,  medTat:0.94, avgTat:1.38,  smR:0,  transfer:1,  color:"#10B981", issue:"TAT improved dramatically — med 11.64d (WK10) → 0.94d (WK11). Freeman 3 WOs. 8 leaked WOs to LDOG — entire station output went to competitor. New tech started 3/16.", parts:"Minimal data — 2 calls. Low parts volume consistent with small WO count." },
+  { station:"HIN3", wos:0,   cargo:0,  box:0,  tractor:0,  medTat:null, avgTat:null,  smR:0,  transfer:0,  color:"#EF4444", issue:"No WOs completed in WK11 — no coverage. 7 leaked WOs, JBXL top DSP (6). New tech ~2 weeks out pending paperwork. Kevin Johnson (Middle Mile) deployed when accessible, 3 hrs away.", parts:"No WOs in WK11. Insufficient data." },
+  { station:"HPD1", wos:0,   cargo:0,  box:0,  tractor:0,  medTat:null, avgTat:null,  smR:0,  transfer:0,  color:"#EF4444", issue:"No WOs completed in WK11. 7 leaked WOs, JDTC responsible for all 7. Status unconfirmed — no output data. Coverage situation requires immediate clarification.", parts:"No WOs in WK11. Insufficient data." },
+];
+
+const STAFFING_DATA = [
+  { type: "Active (Field Manager)",  replacing: "N/A",              reqDate: "N/A",       hireDate: "2/17/2026", startDate: "2/23/2026", site: "Network", notes: "David Ross (Field Manager). Network-wide. On-site at HLA2 WK10 for training and container audit. Continuing oversight and support.", status: "Active" },
+  { type: "Active",         replacing: "N/A",              reqDate: "2/26/2026", hireDate: "3/4/2026",  startDate: "3/2/2026",  site: "HTP2",  notes: "Jessamine Rodriguez — third tech, weekend shift anchor. HTP2 at full 3-tech strength.", status: "Active" },
+  { type: "Active",         replacing: "Alexander Childs", reqDate: "2/12/2026", hireDate: "3/4/2026",  startDate: "2/23/2026", site: "HCT2",  notes: "Christopher Harvey performing well — producing 10+ more WOs/week than previous tech. Second tech starting next week. HCT2 moving toward 2-tech strength.", status: "Active" },
+  { type: "Active",         replacing: "Justin Forte",     reqDate: "2/12/2026", hireDate: "3/4/2026",  startDate: "3/9/2026",  site: "HLA2",  notes: "Third tech ramping at HLA2. Madrigal 30 WOs + Darter 14 + Alexander 9 = 53 WOs this week at 0.69d avg.", status: "Active" },
+  { type: "Active",         replacing: "N/A",              reqDate: "2/12/2026", hireDate: "2/17/2026", startDate: "2/23/2026", site: "HMS2",  notes: "Daniel Freeman — first tech, active since 2/23. TAT improved dramatically WK11 (11.64d → 0.94d) after second tech arrival.", status: "Active" },
+  { type: "Ramping",        replacing: "N/A",              reqDate: "2/26/2026", hireDate: "3/11/2026", startDate: "3/16/2026", site: "HMS2",  notes: "Second tech started this week — currently in training. TAT turnaround confirmed WK11 (11.64d → 0.94d). Once out of training, capacity will increase further. 8 leaked WOs to LDOG remain a DSP engagement issue, not a coverage issue.", status: "Ramping" },
+  { type: "Ramping",        replacing: "N/A",              reqDate: "2/26/2026", hireDate: "3/11/2026", startDate: null,        site: "HDT3",  notes: "New tech hired — start pending paperwork completion. Lucas (18 WOs) and McRoberts (13 WOs) holding WK11 volume at 31 WOs. Third tech will provide meaningful capacity relief once active.", status: "Ramping" },
+  { type: "Ramping",        replacing: "N/A",              reqDate: "3/4/2026",  hireDate: "3/11/2026", startDate: null,        site: "HCL2",  notes: "Starting next week pending paperwork completion. Eugene (HCT2) cross-covering in interim. WK11 data confirms urgency: 16 SM reschedulings (highest ever single-station), avg TAT 4.39d.", status: "Ramping" },
+  { type: "Ramping",        replacing: "N/A",              reqDate: "3/11/2026", hireDate: "3/17/2026", startDate: null,        site: "HCT2",  notes: "Second tech hired, starting next week — adds capacity behind Harvey's strong individual performance. Harvey delivering 10+ more WOs/week than prior tech.", status: "Ramping" },
+  { type: "Open Req",       replacing: "N/A",              reqDate: "2/19/2026", hireDate: "N/A",       startDate: null,        site: "HIN3",  notes: "Open requisition — low talent pool in area making placement difficult. Zero WOs in WK11, 7 leaked to JBXL. Kevin Johnson (Middle Mile only, 3 hrs away) is not a permanent solution. Escalate sourcing strategy.", status: "Open" },
+  { type: "Open Req",       replacing: "N/A",              reqDate: "3/11/2026", hireDate: "N/A",       startDate: null,        site: "HDY1",  notes: "Open req actively fielding candidates. Burgess solo with night shift active. Aged WO cluster (avg 4.23d vs 1.32d median) present — individual WO triage needed alongside req.", status: "Open" },
+];
+
+const ACTIVE_TECHS = [
+  { name: "LM - Fernando Cruz",        wos: 34, medTat: 0.64, station: "HAU1",  start: "12/15/25" },
+  { name: "LM - Jose Madrigal",        wos: 30, medTat: 0.40, station: "HLA2",  start: "11/24/25" },
+  { name: "LM - Marcos Tun",           wos: 23, medTat: 0.45, station: "HSL1",  start: "10/13/25" },
+  { name: "OH - Charles Burgess",      wos: 22, medTat: 1.32, station: "HDY1",  start: "11/24/25" },
+  { name: "LM - Evereth Salas",        wos: 20, medTat: 0.84, station: "HHO3",  start: "10/27/25" },
+  { name: "LM - Terence Lucas",        wos: 18, medTat: 0.55, station: "HDT3",  start: "10/6/25" },
+  { name: "LM NC - Justin Owens",      wos: 16, medTat: 3.46, station: "HCL2",  start: "—" },
+  { name: "Jessamine Rodriguez",       wos: 15, medTat: 1.32, station: "HTP2",  start: "3/2/26" },
+  { name: "HOU, TX - Omar Noriega",    wos: 14, medTat: 0.79, station: "HHO3",  start: "2/9/26" },
+  { name: "LM - Eugene Fowler",        wos: 14, medTat: 1.58, station: "HCL2",  start: "—" },
+  { name: "Fresno - Nicholas Darter",  wos: 14, medTat: 0.56, station: "HLA2",  start: "WK09 (temp)" },
+  { name: "LM - Alejandro Fernandez",  wos: 13, medTat: 2.53, station: "HMK4",  start: "11/17/25" },
+  { name: "LM - Thomas McRoberts",     wos: 13, medTat: 0.33, station: "HDT3",  start: "6/30/25" },
+  { name: "LM - Denzel Alexander",     wos: 9,  medTat: 0.03, station: "HLA2",  start: "—" },
+  { name: "LM John Wallace",           wos: 7,  medTat: 0.40, station: "HTP2",  start: "2/23/26" },
+  { name: "LM - Lamont Henderson",     wos: 7,  medTat: 0.53, station: "HHO3",  start: "11/3/25" },
+  { name: "Christopher Harvey",        wos: 7,  medTat: 1.38, station: "HCT2",  start: "2/23/26" },
+  { name: "LM - Brooks Lawson",        wos: 5,  medTat: 1.25, station: "HAU1",  start: "9/22/25" },
+  { name: "MN - Daniel Freeman",       wos: 3,  medTat: 0.94, station: "HMS2",  start: "2/23/26" },
+  { name: "IN - David Ross (Lead Tech)",wos: 1,  medTat: 0.86, station: "HTP2",  start: "2/23/26" },
+  { name: "Clinton Thompson",          wos: 1,  medTat: 0.68, station: "HLA2",  start: "—" },
+];
+
+const PARTS_STATION = [
+  { station:"HLA2", calls:43, topSys:["PM/Inspection","Electrical","Engine/CEL"],         wos:54 },
+  { station:"HDT3", calls:28, topSys:["PM/Inspection","Engine/CEL","Brakes"],             wos:31 },
+  { station:"HHO3", calls:28, topSys:["PM/Inspection","Brakes","Engine/CEL"],             wos:41 },
+  { station:"HAU1", calls:25, topSys:["PM/Inspection","Electrical","Body/Collision"],     wos:39 },
+  { station:"HSL1", calls:22, topSys:["PM/Inspection","Fluids","Electrical"],             wos:23 },
+  { station:"HTP2", calls:21, topSys:["PM/Inspection","Fluids","Engine/CEL"],             wos:23 },
+  { station:"HCL2", calls:20, topSys:["PM/Inspection","Transmission","Brakes"],           wos:30 },
+  { station:"HMK4", calls:15, topSys:["PM/Inspection","Engine/CEL","Fluids"],             wos:13 },
+  { station:"HDY1", calls:15, topSys:["PM/Inspection","Electrical","Body/Collision"],     wos:22 },
+  { station:"HCT2", calls:8,  topSys:["PM/Inspection","Brakes","Transmission"],           wos:7  },
+  { station:"HMS2", calls:2,  topSys:["PM/Inspection"],                                   wos:3  },
+];
+
+const TOP_SYSTEMS = [
+  { system:"PM/Inspection",        count:192, replaceCount:0,  color:"#7C3AED" },
+  { system:"Fluids",               count:72,  replaceCount:30, color:"#2563EB" },
+  { system:"Electrical",           count:53,  replaceCount:20, color:"#0891B2" },
+  { system:"Engine/CEL",           count:48,  replaceCount:15, color:"#EA580C" },
+  { system:"Brakes",               count:48,  replaceCount:22, color:"#DC2626" },
+  { system:"Body/Collision",       count:34,  replaceCount:5,  color:"#D97706" },
+  { system:"Transmission",         count:15,  replaceCount:8,  color:"#059669" },
+  { system:"Tires/Wheels",         count:10,  replaceCount:4,  color:"#868E96" },
+  { system:"AC/HVAC",              count:8,   replaceCount:3,  color:"#6366F1" },
+  { system:"Liftgate",             count:4,   replaceCount:2,  color:"#0891B2" },
+];
+
+const c = {
+  bg: "#F8F9FA", card: "#FFFFFF", elevated: "#F1F3F5", text: "#1A1A2E", textSec: "#495057", textMuted: "#868E96",
+  border: "#DEE2E6", borderLight: "#E9ECEF",
+  purple: "#7C3AED", purpleBg: "#F5F3FF", purpleBorder: "#DDD6FE",
+  green: "#059669", greenBg: "#ECFDF5",
+  red: "#DC2626", redBg: "#FEF2F2",
+  amber: "#D97706", amberBg: "#FFFBEB",
+  orange: "#EA580C",
+  pink: "#DB2777",
+  cyan: "#0891B2", cyanBg: "#ECFEFF", cyanBorder: "#A5F3FC",
+  blue: "#2563EB", blueBg: "#EFF6FF",
+};
+
+const isHit = (k, v) => { if (v === null || k.target === null) return false; return k.lowerBetter ? v <= k.target : v >= k.target; };
+const getWow = (k) => { const v = k.values; if (v[6] === null || v[5] === null) return null; return +(v[6] - v[5]).toFixed(2); };
+const getTrend = (k) => { const v = k.values; if (v[6] === null || v[5] === null) return "flat"; const wow = v[6] - v[5]; if (wow === 0) return "flat"; return k.lowerBetter ? (wow < 0 ? "improving" : "worsening") : (wow > 0 ? "improving" : "worsening"); };
+
+const Pill = ({ type, children }) => {
+  const styles = {
+    hit: { bg: c.greenBg, color: c.green, border: "#A7F3D0" },
+    miss: { bg: c.redBg, color: c.red, border: "#FECACA" },
+    improving: { bg: c.greenBg, color: c.green, border: "#A7F3D0" },
+    worsening: { bg: c.redBg, color: c.red, border: "#FECACA" },
+    tbd: { bg: c.amberBg, color: c.amber, border: "#FDE68A" },
+    active: { bg: c.greenBg, color: c.green, border: "#A7F3D0" },
+    ramping: { bg: c.cyanBg, color: c.cyan, border: c.cyanBorder },
+    pending: { bg: c.amberBg, color: c.amber, border: "#FDE68A" },
+    open: { bg: c.redBg, color: c.red, border: "#FECACA" },
+    evaluating: { bg: c.purpleBg, color: c.purple, border: c.purpleBorder },
+  };
+  const s = styles[type] || styles.tbd;
+  return <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:5,background:s.bg,color:s.color,border:`1px solid ${s.border}`,whiteSpace:"nowrap" }}>{children}</span>;
+};
+
+const ScoreCard = ({ label, value, accent, sub, trend }) => (
+  <div style={{ flex:1,minWidth:140,background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:"16px 18px",borderTop:`3px solid ${accent||c.purple}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+    <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,marginBottom:6 }}>{label}</div>
+    <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:28,fontWeight:800,color:accent||c.text }}>{value}</div>
+    {sub && <div style={{ marginTop:6 }}>{typeof sub === "string" ? <span style={{ fontSize:12,color:c.textMuted }}>{sub}</span> : sub}</div>}
+    {trend && <div style={{ fontSize:12,fontWeight:600,color:trend.color,marginTop:4 }}>{trend.text}</div>}
+  </div>
+);
+
+const MiniBar = ({ values, target, lowerBetter }) => (
+  <div style={{ display:"flex",gap:2,alignItems:"flex-end",height:20 }}>
+    {values.map((v,i) => {
+      const h = v === null ? 3 : Math.max((v / target) * 16, 2);
+      const hit = v === null ? false : lowerBetter ? v <= target : v >= target;
+      return <div key={i} style={{ flex:1,height:h,borderRadius:"3px 3px 0 0",background:v===null?c.border:hit?c.green:c.red,opacity:0.75,minWidth:6 }}/>;
+    })}
+  </div>
+);
+
+const TrendChart = ({ kpi }) => {
+  const vals = kpi.values.filter(x => x !== null);
+  const mx = Math.max(...vals, kpi.target || Math.max(...vals)) * 1.25;
+  const chartH = 130;
+  const targetPct = kpi.target ? (kpi.target / mx) * 100 : null;
+  return (
+    <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:20,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+      <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16 }}>
+        <span style={{ fontWeight:700,fontSize:15,color:c.text }}>{kpi.name}</span>
+        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,background:c.elevated,padding:"3px 10px",borderRadius:5,border:`1px solid ${c.borderLight}` }}>Target: {kpi.targetLabel}</span>
+      </div>
+      <div style={{ position:"relative",height:chartH+40,display:"flex",alignItems:"flex-end",gap:6,paddingBottom:40 }}>
+        {targetPct && (
+          <div style={{ position:"absolute",left:0,right:0,bottom:40+(targetPct/100)*chartH,borderTop:`2px dashed ${c.amber}`,zIndex:2 }}>
+            <span style={{ position:"absolute",right:0,transform:"translateY(-50%)",fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,color:c.amber,background:c.card,padding:"0 6px" }}>{kpi.target}{kpi.suffix||""}</span>
+          </div>
+        )}
+        {kpi.values.map((v,i) => {
+          if (v === null) return <div key={i} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4 }}>
+            <div style={{ width:"100%",height:chartH*0.25,borderRadius:"4px 4px 0 0",background:c.border,opacity:0.3 }}/>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:600,color:c.amber }}>TBD</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:600,color:c.textMuted }}>{WEEKS[i]}</span>
+          </div>;
+          const h = Math.max((v / mx) * chartH, 4);
+          const hit = isHit(kpi, v);
+          const isLatest = i === kpi.values.length - 1;
+          return <div key={i} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4 }}>
+            <div style={{ width:"100%",height:h,borderRadius:"4px 4px 0 0",background:hit?c.green:c.red,opacity:isLatest?1:0.65,transition:"height 0.4s",border:isLatest?`2px solid ${hit?c.green:c.red}`:"none" }}/>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:isLatest?800:600,color:isLatest?c.text:c.textSec }}>{(kpi.prefix||"")+v+(kpi.suffix||"")}</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:isLatest?700:600,color:isLatest?c.purple:c.textMuted }}>{WEEKS[i]}</span>
+          </div>;
+        })}
+      </div>
+    </div>
+  );
+};
+
+function Dashboard() {
+  const [tab, setTab] = useState("overview");
+  const [actionFilter, setActionFilter] = useState("all");
+  const [selectedKpi, setSelectedKpi] = useState(null);
+
+  const SCORED_IDS = ["atat_overall","atat_cargo","atat_box","backlog","weekend","vendor"];
+  const currentWeek = KPI_DATA.map(k => ({ ...k, current: k.values[6], hit: isHit(k, k.values[6]), wow: getWow(k), trend: getTrend(k) }));
+  const computableKpis = currentWeek.filter(k => SCORED_IDS.includes(k.id));
+  const hits = computableKpis.filter(k => k.hit).length;
+  const misses = computableKpis.filter(k => !k.hit).length;
+  const hitRate = computableKpis.length > 0 ? Math.round((hits / computableKpis.length) * 100) : 0;
+  const filteredActions = useMemo(() => { if (actionFilter === "all") return ACTIONS; return ACTIONS.filter(a => a.priority.toLowerCase() === actionFilter); }, [actionFilter]);
+
+  const thStyle = { fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,padding:"12px 14px",textAlign:"left",background:c.elevated,borderBottom:`1px solid ${c.border}`,position:"sticky",top:0 };
+  const tdStyle = { fontSize:14,padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,color:c.text };
+  const numTd = { ...tdStyle, textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:600 };
+
+  const renderKpiTable = (category, label, badge, badgeAccent, badgeBg, badgeBorder) => (
+    <>
+      <div style={{ display:"flex",alignItems:"center",gap:10,margin:"26px 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+        <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>{label}</span>
+        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:badgeBg,color:badgeAccent,border:`1px solid ${badgeBorder}` }}>{badge}</span>
+      </div>
+      <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,overflow:"auto",marginBottom:14,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+        <table style={{ width:"100%",borderCollapse:"collapse" }}>
+          <thead><tr>
+            <th style={{ ...thStyle,minWidth:190 }}>KPI</th><th style={thStyle}>Target</th>
+            {WEEKS.map(w => <th key={w} style={{ ...thStyle,textAlign:"right",minWidth:60,color:w==="WK11"?c.purple:c.textMuted }}>{w}</th>)}
+            <th style={{ ...thStyle,textAlign:"right" }}>WoW</th>
+            <th style={{ ...thStyle,minWidth:75 }}>Status</th>
+            <th style={{ ...thStyle,minWidth:100 }}>Trend</th>
+          </tr></thead>
+          <tbody>
+            {currentWeek.filter(k => k.category === category).map(k => (
+              <tr key={k.id} onClick={() => setSelectedKpi(selectedKpi === k.id ? null : k.id)} style={{ cursor:"pointer",background:selectedKpi===k.id?c.purpleBg:"transparent",transition:"background 0.2s" }}>
+                <td style={{ ...tdStyle,fontWeight:600 }}>{k.name}</td>
+                <td style={{ ...tdStyle,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:c.textMuted }}>{k.targetLabel}</td>
+                {k.values.map((v,i) => <td key={i} style={{ ...numTd,color:v===null?c.amber:isHit(k,v)?c.green:c.red,fontWeight:i===6?800:600,background:i===6?"rgba(124,58,237,0.04)":"transparent" }}>{v===null?"—":((k.prefix||"")+v+(k.suffix||""))}</td>)}
+                <td style={{ ...numTd,color:k.wow===null?c.textMuted:k.wow===0?c.textMuted:(k.lowerBetter?(k.wow<0?c.green:c.red):(k.wow>0?c.green:c.red)) }}>{k.wow===null?"—":((k.wow>0?"+":"")+k.wow+(k.suffix||""))}</td>
+                <td style={tdStyle}>{k.values[6]===null||k.target===null?<Pill type="tbd">—</Pill>:k.hit?<Pill type="hit">HIT</Pill>:<Pill type="miss">MISS</Pill>}</td>
+                <td style={tdStyle}><Pill type={k.trend==="improving"?"improving":k.trend==="worsening"?"worsening":"tbd"}>{k.trend==="improving"?"▲ Improving":k.trend==="worsening"?"▼ Worsening":"→ Flat"}</Pill></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {selectedKpi && currentWeek.find(k=>k.id===selectedKpi)?.category===category && <TrendChart kpi={currentWeek.find(k=>k.id===selectedKpi)} />}
+    </>
+  );
+
+  const tabs = ["overview","bridges","stations","staffing","parts","actions","escalations"];
+  const tabLabels = { overview:"Overview", bridges:"Bridges", stations:"Stations & Trends", staffing:"Staffing", parts:"Parts (WK11)", actions:"Action Items", escalations:"Escalations" };
+
+  return (
+    <div style={{ minHeight:"100vh",background:c.bg }}>
+      {/* Header */}
+      <div style={{ background:c.card,borderBottom:`1px solid ${c.border}`,padding:"16px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12 }}>
+        <div style={{ display:"flex",alignItems:"center",gap:14 }}>
+          <span style={{ fontWeight:800,fontSize:20,color:c.purple,letterSpacing:"-0.02em" }}>KOONER</span>
+          <span style={{ fontSize:15,fontWeight:600,color:c.textSec }}>Last Mile Operations</span>
+          <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:5,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>WK11</span>
+        </div>
+        <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:c.textMuted }}>Mar 8 – Mar 14, 2026 · WBR Wed Mar 18 @ 3:30 PM CST</div>
+      </div>
+
+      {/* Tab Nav */}
+      <div style={{ background:c.card,borderBottom:`1px solid ${c.border}`,padding:"0 24px",display:"flex",gap:0,overflowX:"auto" }}>
+        {tabs.map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{ fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,padding:"14px 20px",border:"none",borderBottom:tab===t?`3px solid ${c.purple}`:"3px solid transparent",background:"transparent",color:tab===t?c.purple:c.textMuted,cursor:"pointer",transition:"all 0.2s",whiteSpace:"nowrap" }}>
+            {tabLabels[t]}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ padding:"20px 24px 48px",maxWidth:1500,margin:"0 auto" }}>
+
+        {/* OVERVIEW */}
+        {tab === "overview" && <>
+          {/* Performance KPIs + Adoption */}
+          <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",color:c.textMuted,marginBottom:8 }}>Performance KPIs (WK11)</div>
+          <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+            <ScoreCard label="KPIs Measured" value={computableKpis.length} sub={"ATAT (3) · Backlog · Weekend · Vendor"} accent={c.purple} />
+            <ScoreCard label="Hits" value={hits} accent={c.green} trend={{ text: `▲ From WK10 (3 hits → ${hits} hits)`, color: c.green }} />
+            <ScoreCard label="Misses" value={misses} accent={misses<=2?c.amber:c.red} trend={{ text: `Backlog · Vendor — ${misses} misses`, color: c.amber }} />
+            <ScoreCard label="Hit Rate" value={hitRate + "%"} accent={hitRate>=50?c.green:c.amber} sub={<MiniBar values={[1,1,1,1,0,3,hits]} target={6} lowerBetter={false} />} />
+            <ScoreCard label="Adoption %" value="54%" accent={c.red}
+              sub="Target > 85% · MISS — not scored"
+              trend={{ text: "▼ -15pp WoW — regression from WK10 surge", color: c.red }} />
+          </div>
+
+          {/* Volume by Station Chart — full width */}
+          <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:"16px 18px",borderTop:`3px solid ${c.purple}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)",marginBottom:20 }}>
+            <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,marginBottom:12 }}>WO Volume by Station — WK11</div>
+            <div style={{ display:"flex",gap:6,alignItems:"flex-end",height:90 }}>
+              {[...STATION_DATA].sort((a,b) => b.wos - a.wos).map(s => {
+                const max = 54;
+                const h = s.wos === 0 ? 3 : Math.max((s.wos / max) * 82, 4);
+                const barColor = s.medTat == null ? c.red : s.medTat <= 1 ? c.green : s.medTat <= 2 ? c.amber : c.red;
+                return (
+                  <div key={s.station} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3 }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,color:s.wos===0?c.textMuted:c.text }}>{s.wos===0?"—":s.wos}</span>
+                    <div style={{ width:"100%",height:h,borderRadius:"3px 3px 0 0",background:barColor,opacity:s.wos===0?0.2:0.85,minWidth:10 }}/>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,color:barColor,whiteSpace:"nowrap",transform:"rotate(-35deg)",transformOrigin:"top center",marginTop:6,display:"block" }}>{s.station}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ marginTop:24,fontSize:10,color:c.textMuted,display:"flex",gap:14 }}>
+              <span><span style={{color:c.green,fontWeight:700}}>■</span> MTTR ≤1d</span>
+              <span><span style={{color:c.amber,fontWeight:700}}>■</span> MTTR 1–2d</span>
+              <span><span style={{color:c.red,fontWeight:700}}>■</span> MTTR >2d / No coverage</span>
+            </div>
+          </div>
+
+          {renderKpiTable("efficiency", "Efficiency KPIs", "5 KPIs · ATAT (3) · Backlog · Weekend scored", c.purple, c.purpleBg, c.purpleBorder)}
+          {renderKpiTable("quality", "Quality KPIs", "1 KPI", c.pink, "#FDF4FF", "#F0ABFC")}
+
+          {/* Informational Metrics */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"26px 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Informational Metrics</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.cyanBg,color:c.cyan,border:`1px solid ${c.cyanBorder}` }}>Not Scored</span>
+          </div>
+          {renderKpiTable("completion", "Completion KPIs", "2 KPIs · Informational only", c.blue, c.blueBg, "#BFDBFE")}
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(240px, 1fr))",gap:12 }}>
+            {Object.entries(INFO_METRICS).map(([label, items]) => (
+              <div key={label} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:16,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontSize:11,color:c.textMuted,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:10 }}>{label}</div>
+                {items.map((r,i) => (
+                  <div key={i} style={{ display:"flex",justifyContent:"space-between",alignItems:"baseline",padding:"6px 0",borderBottom:i<items.length-1?`1px solid ${c.borderLight}`:"none" }}>
+                    <span style={{ fontSize:13,color:c.textSec }}>{r.type}</span>
+                    <div style={{ display:"flex",alignItems:"baseline",gap:8 }}>
+                      {r.wow && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:r.wow.startsWith("+")?c.red:r.wow.startsWith("-")?c.green:c.textMuted }}>{r.wow}</span>}
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:700 }}>{r.val}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Key Patterns */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"26px 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Key Patterns — WK11</span>
+          </div>
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))",gap:12 }}>
+            {PATTERNS.map((p,i) => (
+              <div key={i} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:18,borderLeft:`4px solid ${p.color}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontSize:18,marginBottom:8 }}>{p.icon} <span style={{ fontWeight:700,fontSize:15 }}>{p.title}</span></div>
+                <div style={{ fontSize:13,color:c.textSec,lineHeight:1.7 }}>{p.text}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Hit Rate Progression */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"30px 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Hit Rate Progression</span>
+          </div>
+          <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:16,overflow:"auto",boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+            <table style={{ width:"100%",borderCollapse:"collapse" }}>
+              <thead><tr><th style={thStyle}></th>{WEEKS.map(w => <th key={w} style={{ ...thStyle,textAlign:"center",color:w==="WK11"?c.purple:c.textMuted }}>{w}</th>)}</tr></thead>
+              <tbody>
+                <tr><td style={{ ...tdStyle,fontWeight:700 }}>Hits</td>{[1,1,1,1,0,3,hits].map((v,i) => <td key={i} style={{ ...numTd,textAlign:"center",color:v>=5?c.green:v>=3?c.amber:c.red,fontWeight:i===6?800:600,background:i===6?"rgba(124,58,237,0.04)":"transparent" }}>{v}</td>)}</tr>
+                <tr><td style={{ ...tdStyle,fontWeight:700 }}>Misses</td>{[5,5,5,5,6,3,misses].map((v,i) => <td key={i} style={{ ...numTd,textAlign:"center",color:v<=1?c.green:v<=3?c.amber:c.red,fontWeight:i===6?800:600,background:i===6?"rgba(124,58,237,0.04)":"transparent" }}>{v}</td>)}</tr>
+                <tr><td style={{ ...tdStyle,fontWeight:800,color:c.purple }}>Hit Rate</td>{[17,17,17,17,0,50,hitRate].map((v,i) => <td key={i} style={{ ...numTd,textAlign:"center",fontWeight:700,color:v>=50?c.green:v>=33?c.amber:c.red,background:i===6?"rgba(124,58,237,0.04)":"transparent" }}>{v}%</td>)}</tr>
+              </tbody>
+            </table>
+          </div>
+        </>}
+
+        {/* BRIDGES */}
+        {tab === "bridges" && <>
+          <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+            <ScoreCard label="Performance KPIs" value={computableKpis.length} accent={c.purple} sub="ATAT (3) · Backlog · Weekend · Vendor" />
+            <ScoreCard label="Hits" value={hits} accent={c.green} sub="TAT Overall · Cargo · Box Truck · Weekend" />
+            <ScoreCard label="Misses" value={misses} accent={misses<=2?c.amber:c.red} sub="Backlog · Vendor Rejection" />
+          </div>
+
+          {/* WK11 Bright Spots */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>WK11 Bright Spots</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>4 KPI HITs · All TAT KPIs On Target</span>
+          </div>
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))",gap:12,marginBottom:28 }}>
+            {[
+              { title: "Box Truck TAT Hits Target — 2.61d → 1.96d", body: "First time Box Truck TAT is below the 2d target in the tracked window. -0.65d WoW improvement. HLA2 (46 box WOs, 0.69d avg) is the major positive contributor. Only HCL2 (4.39d avg) remains as a structural drag." },
+              { title: "All Three TAT KPIs On Target Simultaneously", body: "Overall 1.91d · Cargo 1.82d · Box Truck 1.96d — all three below the 2d target in the same week for the first time. This is the network operating at full TAT capacity. The path here was 20+ weeks of staffing, shift changes, and cross-coverage." },
+              { title: "Weekend Deficit 220% — Operating Model Confirmed", body: "Second consecutive week above target and accelerating. 35 weekend completions out of 286 total. WK10 was not a bounce — Saturday assignments are structurally embedded in the operating model." },
+              { title: "HSL1 Volume Surge — 4 WOs → 23 WOs", body: "Marcos Tun delivered 23 WOs at 0.45d median this week. Zero leakage. HSL1 has been a quiet performer and WK11 shows what the station can do when fully engaged. Zero transfer failures." },
+            ].map((w,i) => (
+              <div key={i} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:18,borderLeft:`4px solid ${c.green}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontWeight:700,fontSize:15,marginBottom:8 }}>{w.title}</div>
+                <div style={{ fontSize:14,color:c.textSec,lineHeight:1.7 }}>{w.body}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* KPI Bridges */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>KPI Bridges — WK11</span>
+          </div>
+          {BRIDGES.map((b,i) => {
+            const isHitBridge = b.kpi.includes('✅');
+            const isMissBridge = b.kpi.includes('🔴');
+            const borderColor = isHitBridge ? c.green : isMissBridge ? c.red : c.purple;
+            const bgColor = isHitBridge ? "rgba(5,150,105,0.03)" : "transparent";
+            return (
+            <div key={i} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:20,marginBottom:14,borderLeft:`4px solid ${borderColor}`,background:bgColor,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+              <div style={{ fontWeight:800,fontSize:15,color:c.text,marginBottom:14,paddingBottom:8,borderBottom:`1px solid ${c.borderLight}`,display:"flex",alignItems:"center",gap:10 }}>
+                <span>{b.kpi}</span>
+              </div>
+              {isHitBridge ? (
+                <div>
+                  <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.green,marginBottom:6 }}>What's Working — Keep Doing This</div>
+                  <div style={{ fontSize:13,color:c.textSec,lineHeight:1.7 }}>{b.action}</div>
+                  <div style={{ marginTop:10,paddingTop:10,borderTop:`1px solid ${c.borderLight}` }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,padding:"3px 10px",borderRadius:5,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>{b.returnTarget}</span>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16 }}>
+                  {[
+                    { label: "Root Cause", key: "rootCause" },
+                    { label: "Corrective Action", key: "action" },
+                    { label: "Return to Target", key: "returnTarget" },
+                  ].map(field => (
+                    <div key={field.label}>
+                      <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textMuted,marginBottom:6 }}>{field.label}</div>
+                      <div style={{ fontSize:13,color:c.textSec,lineHeight:1.7 }}>{b[field.key]}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            );
+          })}
+        </>}
+
+        {/* STATIONS */}
+        {tab === "stations" && <>
+          <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+            <ScoreCard label="Active Stations" value={STATION_DATA.length} accent={c.purple} />
+            <ScoreCard label="On Target" value={STATION_DATA.filter(s=>s.medTat&&s.medTat<=1).length} accent={c.green} sub="Med TAT ≤ 1d" />
+            <ScoreCard label="Watch" value={STATION_DATA.filter(s=>s.medTat&&s.medTat>1&&s.medTat<=2).length} accent={c.amber} sub="Med TAT 1–2d" />
+            <ScoreCard label="Critical / No Coverage" value={STATION_DATA.filter(s=>!s.medTat||s.medTat>2).length} accent={c.red} sub="Med TAT > 2d or no WOs" />
+          </div>
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 14px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Station Health</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>WK11 · Mar 8–14</span>
+          </div>
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(260px,1fr))",gap:12,marginBottom:28 }}>
+            {STATION_DATA.map(s => {
+              const statusColor = s.medTat==null ? c.red : s.medTat<=1 ? c.green : s.medTat<=2 ? c.amber : c.red;
+              const statusLabel = s.medTat==null ? "NO COVERAGE" : s.medTat<=1 ? "ON TARGET" : s.medTat<=2 ? "WATCH" : "CRITICAL";
+              const statusBg = s.medTat==null ? c.redBg : s.medTat<=1 ? c.greenBg : s.medTat<=2 ? c.amberBg : c.redBg;
+              const statusBorder = s.medTat==null ? "#FECACA" : s.medTat<=1 ? "#A7F3D0" : s.medTat<=2 ? "#FDE68A" : "#FECACA";
+              return (
+                <div key={s.station} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:18,borderTop:`4px solid ${statusColor}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12 }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:22,fontWeight:700,color:statusColor }}>{s.station}</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,background:statusBg,color:statusColor,border:`1px solid ${statusBorder}` }}>{statusLabel}</span>
+                  </div>
+                  <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:10 }}>
+                    {[
+                      { label:"Med TAT", val:s.medTat!=null?s.medTat+"d":"—", color:s.medTat==null?c.red:s.medTat<=1?c.green:s.medTat<=2?c.amber:c.red },
+                      { label:"Avg TAT", val:s.avgTat!=null?s.avgTat+"d":"—", color:s.avgTat==null?c.red:s.avgTat<=2?c.green:s.avgTat<=4?c.amber:c.red },
+                      { label:"WOs",     val:s.wos,                            color:c.text },
+                    ].map(m => (
+                      <div key={m.label} style={{ background:c.elevated,borderRadius:8,padding:"10px 8px",textAlign:"center" }}>
+                        <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:18,fontWeight:700,color:m.color,lineHeight:1 }}>{m.val}</div>
+                        <div style={{ fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textMuted,marginTop:4 }}>{m.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:10 }}>
+                    {[["Box",s.box],["Cargo",s.cargo],["Tractor",s.tractor]].map(([lbl,val]) => (
+                      <div key={lbl} style={{ background:c.elevated,borderRadius:6,padding:"5px 8px",textAlign:"center" }}>
+                        <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:600 }}>{val}</div>
+                        <div style={{ fontSize:9,fontWeight:700,textTransform:"uppercase",color:c.textMuted,letterSpacing:"0.05em" }}>{lbl}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {s.smR > 0 && (
+                    <div style={{ display:"flex",gap:6,marginBottom:8,flexWrap:"wrap" }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:s.smR>=10?c.redBg:c.amberBg,color:s.smR>=10?c.red:c.amber,border:`1px solid ${s.smR>=10?"#FECACA":"#FDE68A"}` }}>{s.smR} SM Resched</span>
+                    </div>
+                  )}
+                  <div style={{ fontSize:12,color:c.textSec,lineHeight:1.5,borderTop:`1px solid ${c.borderLight}`,paddingTop:10,marginBottom:s.parts?8:0 }}>{s.issue}</div>
+                  {s.parts && <div style={{ fontSize:11,color:c.textMuted,lineHeight:1.5,borderTop:`1px solid ${c.borderLight}`,paddingTop:8,display:"flex",gap:6 }}><span style={{ color:c.amber,flexShrink:0 }}>🔧</span><span>{s.parts}</span></div>}
+                </div>
+              );
+            })}
+          </div>
+          <StationSummaryTable data={STATION_DATA} c={c} />
+        </>}
+
+        {/* STAFFING */}
+        {tab === "staffing" && (() => {
+          const ACTIVE_STATIONS = [
+            { station:"HTP2", techs:["Jessamine Rodriguez","LM John Wallace","IN - David Ross (Lead Tech)"], health:"Healthy", healthNote:"3 techs active. Rodriguez on weekends. Volume dipped to 23 WOs — may reflect backlog clearing." },
+            { station:"HCT2", techs:["LM - Eugene Fowler","Christopher Harvey"],                              health:"Watch",   healthNote:"Eugene primarily deployed at HCL2 cross-coverage (14 WOs). Harvey holding HCT2 at 7 WOs. Expect volume recovery when HCL2 second tech onboards." },
+            { station:"HLA2", techs:["LM - Jose Madrigal","Fresno - Nicholas Darter","LM - Denzel Alexander","Clinton Thompson"], health:"Healthy", healthNote:"Network leader — 54 WOs at 0.69d avg. 4 techs active. SM reschedulings elevated at 17 — monitor." },
+            { station:"HAU1", techs:["LM - Fernando Cruz","LM - Brooks Lawson"],                              health:"Healthy", healthNote:"Strong week — 39 WOs. Cruz 34 WOs at 0.64d. Transfer failures at 15 — investigate dispatching pattern." },
+            { station:"HHO3", techs:["LM - Evereth Salas","HOU, TX - Omar Noriega","LM - Lamont Henderson"], health:"Healthy", healthNote:"Rebound week — 19 → 41 WOs. Zero leakage. Three techs contributing." },
+            { station:"HSL1", techs:["LM - Marcos Tun"],                                                      health:"Healthy", healthNote:"Breakout week — 23 WOs at 0.45d median. Zero leakage, zero transfer failures. Solo but performing at target." },
+            { station:"HMK4", techs:["LM - Alejandro Fernandez"],                                             health:"Watch",   healthNote:"Median TAT regressed from 0.72d → 2.53d. Investigate root cause — no obvious repair complexity driver." },
+            { station:"HMS2", techs:["MN - Daniel Freeman"],                                                  health:"Watch",   healthNote:"Second tech started 3/16 — TAT turnaround confirmed (11.64d → 0.94d). Remaining focus: 8 leaked WOs all to LDOG — DSP engagement is the next lever." },
+            { station:"HDT3", techs:["LM - Terence Lucas","LM - Thomas McRoberts"],                          health:"Healthy", healthNote:"Third tech started 3/16, first week of ramp. Lucas 18 + McRoberts 13 = 31 WOs at 1.26d avg. 9 leaked WOs all SFRM — DSP engagement priority." },
+            { station:"HPD1", techs:[],                                                                        health:"Unknown", healthNote:"Zero WOs WK11. All 7 leaked to JDTC. No tech coverage in Portland. Emergency decision needed: hire, subcontract, or escalate to Amazon." },
+          ];
+          const PIPELINE_STATIONS = [
+            { station:"HCL2", techs:["LM NC - Justin Owens","LM - Eugene Fowler"],   incoming:"~3/25",  health:"Critical", healthNote:"16 SM reschedulings — highest single-station reading ever. Avg TAT 4.39d. Second tech offer accepted, ~3/25 start. Eugene cross-covering 14 WOs as bridge." },
+            { station:"HDY1", techs:["OH - Charles Burgess"],                          incoming:null,     health:"Watch",    healthNote:"Open req active. Med TAT 1.32d but avg 4.23d — aged WO cluster present. Night shift producing. Triage aged WOs individually; do not wait for second tech." },
+            { station:"HIN3", techs:[],                                                incoming:"~3/25",  health:"Critical", healthNote:"Zero WOs. 7 leaked to JBXL. New tech ~2 weeks out pending paperwork. Confirm completion date." },
+          ];
+          const healthCfg = {
+            Healthy:  { color:c.green,    bg:c.greenBg,  border:"#A7F3D0" },
+            Watch:    { color:c.amber,    bg:c.amberBg,  border:"#FDE68A" },
+            Critical: { color:c.red,      bg:c.redBg,    border:"#FECACA" },
+            Ramping:  { color:c.cyan,     bg:c.cyanBg,   border:c.cyanBorder },
+            Unknown:  { color:c.textMuted,bg:c.elevated, border:c.border },
+          };
+          const dedupedTechs = (() => {
+            const seen = new Set();
+            return ACTIVE_TECHS.filter(t => { if(seen.has(t.name)) return false; seen.add(t.name); return true; });
+          })();
+
+          const StationTable = ({ rows, label, badge }) => (
+            <>
+              <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+                <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>{label}</span>
+                <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>{badge}</span>
+              </div>
+              <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,overflow:"auto",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",marginBottom:28 }}>
+                <table style={{ width:"100%",borderCollapse:"collapse" }}>
+                  <thead>
+                    <tr>
+                      {["Station","Health","Techs","WK11 WOs","Med TAT","Notes"].map((h,hi) => (
+                        <th key={h} style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,padding:"11px 14px",textAlign:hi===3||hi===4?"right":"left",background:c.elevated,borderBottom:`1px solid ${c.border}`,whiteSpace:"nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map(row => {
+                      const hc = healthCfg[row.health] || healthCfg.Unknown;
+                      const sd = STATION_DATA.find(s=>s.station===row.station);
+                      const techObjs = dedupedTechs.filter(t=>row.techs.includes(t.name));
+                      const unmatched = row.techs.filter(n=>!techObjs.find(t=>t.name===n));
+                      return (
+                        <tr key={row.station} style={{ borderLeft:`3px solid ${hc.color}` }}>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,whiteSpace:"nowrap" }}>
+                            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:700,color:hc.color }}>{row.station}</span>
+                          </td>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,whiteSpace:"nowrap" }}>
+                            <div style={{ display:"flex",flexWrap:"wrap",gap:4 }}>
+                              <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,background:hc.bg,color:hc.color,border:`1px solid ${hc.border}` }}>{row.health.toUpperCase()}</span>
+                              {row.incoming && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:600,padding:"3px 6px",borderRadius:4,background:c.cyanBg,color:c.cyan,border:`1px solid ${c.cyanBorder}` }}>+1 {row.incoming}</span>}
+                            </div>
+                          </td>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,minWidth:200 }}>
+                            {row.techs.length===0
+                              ? <span style={{ fontSize:12,color:c.textMuted,fontStyle:"italic" }}>No tech assigned</span>
+                              : <div style={{ display:"flex",flexDirection:"column",gap:4 }}>
+                                  {techObjs.map(t=>(
+                                    <div key={t.name} style={{ display:"flex",alignItems:"center",gap:6 }}>
+                                      <span style={{ fontSize:13,fontWeight:600,color:c.text }}>{t.name}</span>
+                                      {t.medTat!=null && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:t.medTat<=1?c.green:t.medTat<=2?c.amber:c.red }}>{t.medTat.toFixed(2)}d</span>}
+                                    </div>
+                                  ))}
+                                  {unmatched.map(n=><span key={n} style={{ fontSize:13,fontWeight:600,color:c.text }}>{n}</span>)}
+                                </div>
+                            }
+                          </td>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:700,color:sd?.wos>0?c.text:c.textMuted }}>{sd?.wos??"—"}</td>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:700,color:sd?.medTat==null?c.textMuted:sd.medTat<=1?c.green:sd.medTat<=2?c.amber:c.red }}>{sd?.medTat!=null?sd.medTat+"d":"—"}</td>
+                          <td style={{ padding:"12px 14px",borderBottom:`1px solid ${c.borderLight}`,fontSize:12,color:c.textSec,lineHeight:1.5,maxWidth:360 }}>{row.healthNote}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          );
+
+          return (
+            <>
+              <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+                <ScoreCard label="Active Techs" value={21} accent={c.purple} sub="WK11 completions" />
+                <ScoreCard label="Healthy Stations" value={ACTIVE_STATIONS.filter(s=>s.health==="Healthy").length} accent={c.green} sub="Active · on target" />
+                <ScoreCard label="Watch / Critical" value={[...ACTIVE_STATIONS,...PIPELINE_STATIONS].filter(s=>s.health==="Watch"||s.health==="Critical").length} accent={c.amber} sub="Needs attention" />
+                <ScoreCard label="Open Reqs" value={2} accent={c.red} sub="HDY1 · HPD1 (emergency)" />
+              </div>
+
+              <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+                <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>WK11 Staffing Updates</span>
+                <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>6 Items</span>
+              </div>
+              <div style={{ display:"flex",flexDirection:"column",gap:10,marginBottom:20 }}>
+                {[
+                  { station:"HDT3", topic:"Third Tech — First Week Active (3/16)", status:"Active", statusColor:c.green, statusBg:c.greenBg, statusBorder:"#A7F3D0",
+                    summary:"Third tech confirmed started 3/16. Lucas 18 WOs + McRoberts 13 WOs = 31 WOs this week at 1.26d avg. Third tech in ramp — full capacity relief expected WK12+. HDT3 is now a 3-tech station." },
+                  { station:"HMS2", topic:"Second Tech — First Week Active (3/16) · TAT Turnaround Confirmed", status:"Active", statusColor:c.green, statusBg:c.greenBg, statusBorder:"#A7F3D0",
+                    summary:"Second tech started 3/16 and the impact is immediate: TAT med 11.64d (WK10) → 0.94d (WK11). Coverage issue resolved. Remaining focus: 8 leaked WOs all went to LDOG — DSP engagement is the next lever, not staffing." },
+                  { station:"HCL2", topic:"Second Tech Offer Accepted — ~3/25 Start", status:"Ramping", statusColor:c.cyan, statusBg:c.cyanBg, statusBorder:c.cyanBorder,
+                    summary:"Offer accepted. Target start approximately 3/25. WK11 data confirms urgency: 16 SM reschedulings (highest single-station reading in tracked history), avg TAT 4.39d on 30 WOs. Eugene cross-covering 14 WOs as the bridge until start." },
+                  { station:"HIN3", topic:"New Tech ~2 Weeks Out — Paperwork Pending", status:"Pending", statusColor:c.amber, statusBg:c.amberBg, statusBorder:"#FDE68A",
+                    summary:"Paperwork pending — timeline unchanged from WK10. Zero WOs again in WK11. 7 WOs leaked to JBXL. Kevin Johnson (Middle Mile only, 3 hrs away) is not a coverage solution. Confirm paperwork completion date." },
+                  { station:"HDY1", topic:"Open Req Active — Aged WO Cluster Requires Immediate Triage", status:"Open", statusColor:c.red, statusBg:c.redBg, statusBorder:"#FECACA",
+                    summary:"Open req fielding candidates. Burgess solo with night shift producing (med TAT 1.32d). However avg TAT of 4.23d indicates 2–3 aged WOs that are not being cleared. These should be individually escalated now — do not wait for the second tech to address them." },
+                  { station:"HPD1", topic:"Coverage Gap — Emergency Status", status:"Open", statusColor:c.red, statusBg:c.redBg, statusBorder:"#FECACA",
+                    summary:"Zero Kooner WOs in WK11. JDTC responsible for all 7 leaked WOs. No tech coverage in Portland. This station needs an immediate decision: hire, subcontract, or escalate to Amazon to confirm whether Kooner is expected to serve this station going forward." },
+                ].map((u, i) => (
+                  <div key={i} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"14px 16px",display:"flex",gap:14,alignItems:"flex-start",boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                    <div style={{ flexShrink:0,minWidth:90 }}>
+                      <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700,color:c.purple,marginBottom:5 }}>{u.station}</div>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:4,background:u.statusBg,color:u.statusColor,border:`1px solid ${u.statusBorder}` }}>{u.status.toUpperCase()}</span>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:13,fontWeight:700,color:c.text,marginBottom:4 }}>{u.topic}</div>
+                      <div style={{ fontSize:13,color:c.textSec,lineHeight:1.6 }}>{u.summary}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* STATION CAPACITY VISUAL */}
+              <div style={{ marginBottom:24 }}>
+                <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,margin:"0 0 14px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}`,flexWrap:"wrap" }}>
+                  <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                    <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Station Capacity — WK11</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>13 Stations</span>
+                  </div>
+                  <span style={{ fontSize:11,color:c.textMuted }}>Bar = WK11 utilization vs estimated capacity</span>
+                </div>
+                {/* Legend */}
+                <div style={{ display:"flex",gap:20,flexWrap:"wrap",marginBottom:14,fontSize:12,color:c.textMuted }}>
+                  {[["Healthy",c.green],["Watch",c.amber],["Critical",c.red],["No Coverage",c.textMuted]].map(([label,col])=>(
+                    <div key={label} style={{ display:"flex",alignItems:"center",gap:6 }}>
+                      <div style={{ width:8,height:8,borderRadius:"50%",background:col }}/>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+                {[
+                  { group:"Pipeline / No Coverage", rows:[
+                    { station:"HCL2", city:"Charlotte, NC",    health:"Critical", techCount:2, wos:33, cap:30, note:"Owens · Eugene cross-covering",    incoming:"2nd tech: next week (paperwork)" },
+                    { station:"HIN3", city:"South Bend, IN",   health:"Critical", techCount:0, wos:0,  cap:0,  note:"Zero WOs · 7 leaked to JBXL",      incoming:"Open req — low talent pool" },
+                    { station:"HPD1", city:"Portland, OR",      health:"Unknown",  techCount:0, wos:0,  cap:0,  note:"Zero WOs · 7 leaked to JDTC",      incoming:"Emergency hire needed" },
+                  ]},
+                  { group:"Active Coverage", rows:[
+                    { station:"HLA2", city:"Santa Clarita, CA", health:"Healthy", techCount:4, wos:54, cap:55, note:"Madrigal · Darter · Alexander · Thompson", incoming:null },
+                    { station:"HHO3", city:"Porter, TX",         health:"Healthy", techCount:3, wos:41, cap:50, note:"Salas · Henderson · Noriega",            incoming:null },
+                    { station:"HAU1", city:"Austin, TX",          health:"Healthy", techCount:2, wos:39, cap:45, note:"Cruz · Lawson",                          incoming:null },
+                    { station:"HDT3", city:"Romulus, MI",          health:"Healthy", techCount:2, wos:31, cap:45, note:"Lucas · McRoberts",                      incoming:"3rd tech: paperwork pending" },
+                    { station:"HTP2", city:"Gibsonton, FL",        health:"Healthy", techCount:3, wos:23, cap:60, note:"Bukovac · Brito · Rodriguez",            incoming:null },
+                    { station:"HSL1", city:"Salt Lake City, UT",   health:"Healthy", techCount:1, wos:23, cap:30, note:"Marcos Tun — breakout week",             incoming:null },
+                    { station:"HMK4", city:"Milwaukee, WI",        health:"Watch",   techCount:2, wos:13, cap:25, note:"Fernandez · Low — TAT regressed",        incoming:null },
+                    { station:"HDY1", city:"Clayton, OH",          health:"Watch",   techCount:1, wos:22, cap:30, note:"Burgess solo — open req active",         incoming:"Open req" },
+                    { station:"HMS2", city:"Lakeville, MN",        health:"Watch",   techCount:2, wos:3,  cap:25, note:"Freeman · new tech (training)",          incoming:"2nd tech: training" },
+                    { station:"HCT2", city:"Chattanooga, TN",      health:"Watch",   techCount:1, wos:7,  cap:20, note:"Chris Harvey · 10+ WOs vs prior",       incoming:"2nd tech: next week" },
+                  ]}
+                ].map(({ group, rows }) => (
+                  <div key={group} style={{ marginBottom:20 }}>
+                    <div style={{ fontSize:11,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",color:c.textMuted,marginBottom:10 }}>{group}</div>
+                    <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:10 }}>
+                      {rows.map(d => {
+                        const hcfg = { Healthy:{col:c.green,bg:c.greenBg}, Watch:{col:c.amber,bg:c.amberBg}, Critical:{col:c.red,bg:c.redBg}, Unknown:{col:c.textMuted,bg:c.elevated} }[d.health] || {};
+                        const pct = d.cap ? Math.min(Math.round(d.wos/d.cap*100),100) : 0;
+                        return (
+                          <div key={d.station} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"13px 14px",boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10 }}>
+                              <div>
+                                <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:14,fontWeight:700,color:c.text }}>{d.station}</div>
+                                <div style={{ fontSize:11,color:c.textMuted,marginTop:2 }}>{d.city}</div>
+                              </div>
+                              <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:10,background:hcfg.bg,color:hcfg.col,border:`1px solid ${hcfg.col}33`,whiteSpace:"nowrap" }}>{d.health}</span>
+                            </div>
+                            <div style={{ display:"flex",justifyContent:"space-between",fontSize:12,padding:"5px 0",borderTop:`1px solid ${c.borderLight}` }}>
+                              <span style={{ color:c.textMuted }}>Techs</span>
+                              <span style={{ display:"flex",alignItems:"center",gap:3 }}>
+                                {Array.from({length:Math.max(d.techCount,1)},(_,i)=>(
+                                  <span key={i} style={{ display:"inline-block",width:9,height:9,borderRadius:"50%",background:i<d.techCount?c.text:c.border }}/>
+                                ))}
+                                <span style={{ fontWeight:600,fontSize:12,marginLeft:4 }}>{d.techCount}</span>
+                              </span>
+                            </div>
+                            <div style={{ display:"flex",justifyContent:"space-between",fontSize:12,padding:"5px 0",borderTop:`1px solid ${c.borderLight}` }}>
+                              <span style={{ color:c.textMuted }}>WK11 WOs</span>
+                              <span style={{ fontWeight:600 }}>{d.wos}</span>
+                            </div>
+                            {d.cap > 0 && (
+                              <>
+                                <div style={{ height:4,borderRadius:2,background:c.border,margin:"10px 0 4px",overflow:"hidden" }}>
+                                  <div style={{ height:"100%",borderRadius:2,width:`${pct}%`,background:hcfg.col }}/>
+                                </div>
+                                <div style={{ display:"flex",justifyContent:"space-between",fontSize:11,color:c.textMuted }}>
+                                  <span>Utilization</span><span>{pct}%</span>
+                                </div>
+                              </>
+                            )}
+                            <div style={{ fontSize:11,color:c.textMuted,marginTop:8,lineHeight:1.4 }}>{d.note}</div>
+                            {d.incoming && (
+                              <div style={{ fontSize:10,fontWeight:600,padding:"2px 7px",borderRadius:4,background:c.cyanBg,color:c.cyan,border:`1px solid ${c.cyanBorder}`,display:"inline-block",marginTop:8 }}>↗ {d.incoming}</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <StationTable rows={PIPELINE_STATIONS} label="Pipeline" badge="3 Stations · Ramping or Pending" />
+              <StationTable rows={ACTIVE_STATIONS} label="Active Stations" badge="10 Stations" />
+            </>
+          );
+        })()}
+
+        {/* PARTS */}
+        {tab === "parts" && <>
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(190px,1fr))",gap:12,marginBottom:20 }}>
+            {[
+              { label:"Total WOs",        value:"286",   sub:"11 stations · WK11",                    accent:c.purple },
+              { label:"WOs With Parts",   value:"97.6%", sub:"222 of 227 calls had a part touch",      accent:c.blue },
+              { label:"Avg Parts / WO",   value:"1.61",  sub:"Across WOs with any part touch",         accent:c.cyan },
+              { label:"Consumables",      value:"31.8%", sub:"116 of 365 total part touches",          accent:c.green },
+              { label:"Repair Parts",     value:"68.2%", sub:"249 of 365 total part touches",          accent:c.orange },
+            ].map(tile => (
+              <div key={tile.label} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:"14px 16px",borderTop:`3px solid ${tile.accent}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textMuted,marginBottom:5 }}>{tile.label}</div>
+                <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:22,fontWeight:800,color:tile.accent,lineHeight:1 }}>{tile.value}</div>
+                <div style={{ fontSize:11,color:c.textMuted,marginTop:5 }}>{tile.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Common Parts */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Common Parts</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>Consumables · Standard Stocking Candidates</span>
+          </div>
+          <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,overflow:"auto",marginBottom:24,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+            <table style={{ width:"100%",borderCollapse:"collapse" }}>
+              <thead><tr>
+                {["Part Name","WK10","WK11","WoW","2-Wk Total","Stock Signal","Priority"].map(h => (
+                  <th key={h} style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,padding:"11px 14px",textAlign:h==="Part Name"||h==="Stock Signal"||h==="Priority"?"left":"right",background:c.elevated,borderBottom:`1px solid ${c.border}`,whiteSpace:"nowrap" }}>{h}</th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {[
+                  { name:"Filter - Cabin Air, Cab",              wk10:58, wk11:26, priority:"Critical",  stock:"CONSISTENT" },
+                  { name:"Fluid - Hydraulic Brake",              wk10:23, wk11:19, priority:"Critical",  stock:"CONSISTENT" },
+                  { name:"Conditioner - Brake Fluid",            wk10:23, wk11:1,  priority:"High",      stock:"VOLATILE" },
+                  { name:"Fluid - Automatic Transmission",       wk10:18, wk11:13, priority:"High",      stock:"CONSISTENT" },
+                  { name:"Oil - Engine",                         wk10:18, wk11:7,  priority:"High",      stock:"CONSISTENT" },
+                  { name:"Housing - Engine Oil Filter",          wk10:17, wk11:13, priority:"High",      stock:"CONSISTENT" },
+                  { name:"Housing - Cabin Air Filter",           wk10:19, wk11:0,  priority:"Monitor",   stock:"DROPPED" },
+                  { name:"Additive - Engine Oil",                wk10:9,  wk11:11, priority:"High",      stock:"CONSISTENT" },
+                  { name:"Fitting - Differential",               wk10:6,  wk11:9,  priority:"High",      stock:"GROWING" },
+                  { name:"Lamp - Marker",                        wk10:12, wk11:2,  priority:"Monitor",   stock:"VOLATILE" },
+                  { name:"Filter Assembly - Oil, Full Flow",     wk10:11, wk11:3,  priority:"Medium",    stock:"CONSISTENT" },
+                  { name:"Element - Filter, Engine Air Cleaner", wk10:11, wk11:0,  priority:"Monitor",   stock:"DROPPED" },
+                  { name:"Fluid - Differential",                 wk10:10, wk11:3,  priority:"Medium",    stock:"CONSISTENT" },
+                  { name:"Filter - Fuel Filter, Water Separator",wk10:8,  wk11:2,  priority:"Medium",    stock:"CONSISTENT" },
+                  { name:"Wiper Blade Assembly",                 wk10:6,  wk11:3,  priority:"Low",       stock:"CONSISTENT" },
+                  { name:"Element - Air Filter",                 wk10:0,  wk11:2,  priority:"Watch",     stock:"NEW" },
+                ].map((p,i) => {
+                  const wow = p.wk11 - p.wk10;
+                  const total = p.wk10 + p.wk11;
+                  const wowColor = wow > 0 ? c.green : wow < 0 ? c.red : c.textMuted;
+                  const stockCfg = {
+                    CONSISTENT: { label:"✓ STOCK",      bg:c.greenBg,   color:c.green,    border:"#A7F3D0" },
+                    GROWING:    { label:"↑ STOCK+",     bg:"#ECFDF5",   color:"#047857",  border:"#6EE7B7" },
+                    VOLATILE:   { label:"~ MONITOR",    bg:c.amberBg,   color:c.amber,    border:"#FDE68A" },
+                    DROPPED:    { label:"↓ REVIEW",     bg:c.elevated,  color:c.textMuted,border:c.borderLight },
+                    NEW:        { label:"? WATCH",      bg:c.cyanBg,    color:c.cyan,     border:c.cyanBorder },
+                  };
+                  const sc = stockCfg[p.stock] || stockCfg.VOLATILE;
+                  const pc = p.priority==="Critical"?c.red:p.priority==="High"?c.orange:p.priority==="Medium"?c.amber:p.priority==="Watch"?c.cyan:c.textMuted;
+                  const pb = p.priority==="Critical"?c.redBg:p.priority==="High"?"#FFF7ED":p.priority==="Medium"?c.amberBg:p.priority==="Watch"?c.cyanBg:c.elevated;
+                  const pbr = p.priority==="Critical"?"#FECACA":p.priority==="High"?"#FED7AA":p.priority==="Medium"?"#FDE68A":p.priority==="Watch"?c.cyanBorder:c.borderLight;
+                  return (
+                    <tr key={i} style={{ background: p.stock==="DROPPED"?"rgba(0,0,0,0.015)":"transparent" }}>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,fontWeight:600,color:p.stock==="DROPPED"?c.textMuted:c.text }}>{p.name}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:p.wk10===0?c.textMuted:c.textSec }}>{p.wk10===0?"—":p.wk10}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:p.wk11===0?c.textMuted:c.blue }}>{p.wk11===0?"—":p.wk11}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:wowColor }}>{p.wk10===0||p.wk11===0?"—":(wow>0?"+":"")+wow}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:c.purple }}>{total}</td>
+                      <td style={{ padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}` }}>
+                        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:sc.bg,color:sc.color,border:`1px solid ${sc.border}` }}>{sc.label}</span>
+                      </td>
+                      <td style={{ padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}` }}>
+                        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:pb,color:pc,border:`1px solid ${pbr}` }}>{p.priority}</span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ fontSize:11,color:c.textMuted,marginBottom:20,display:"flex",gap:16,flexWrap:"wrap" }}>
+            {[
+              { label:"✓ STOCK",  desc:"Present both weeks — reliable stocking candidate" },
+              { label:"↑ STOCK+", desc:"Growing WoW — increase par level" },
+              { label:"~ MONITOR",desc:"High WK10, near-zero WK11 — may be cyclical" },
+              { label:"↓ REVIEW", desc:"Zero WK11 — confirm if truly dropped or data gap" },
+              { label:"? WATCH",  desc:"New WK11 — confirm before stocking" },
+            ].map(l => (
+              <span key={l.label} style={{ fontFamily:"'JetBrains Mono',monospace" }}><strong>{l.label}</strong> — {l.desc}</span>
+            ))}
+          </div>
+
+          {/* Non-Common Repair Parts */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Non-Common Repair Parts</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:"#FFF7ED",color:c.orange,border:"1px solid #FED7AA" }}>Repair Parts · Monitor for Reorder Patterns</span>
+          </div>
+          <div style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,overflow:"auto",marginBottom:24,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+            <table style={{ width:"100%",borderCollapse:"collapse" }}>
+              <thead><tr>
+                {["Part Name","WK10","WK11","WoW","Pattern","Stations","Signal"].map(h => (
+                  <th key={h} style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,padding:"11px 14px",textAlign:h==="WK10"||h==="WK11"||h==="WoW"?"right":"left",background:c.elevated,borderBottom:`1px solid ${c.border}`,whiteSpace:"nowrap" }}>{h}</th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {[
+                  { name:"U-Bolt",                          wk10:14, wk11:0,  stations10:"HLA2, HDT3, HCT2", stations11:"—",                      pattern:"RESOLVED",  signal:"Dominant WK10 repair (14 hits, 3 stations) — zero WK11. Confirm WOs closed; not dropped from tracking. Monitor WK12 for recurrence." },
+                  { name:"Backing Plate - Front Brake",     wk10:0,  wk11:10, stations10:"—",                stations11:"HDT3, HCT2, HTP2",        pattern:"NEW",       signal:"10 hits in first appearance. HDT3 accounts for 8 of 10 — new tech started 3/16 encountering deferred brake work. High urgency watch item for WK12." },
+                  { name:"Ether Injector Assembly",         wk10:8,  wk11:5,  stations10:"HDT3, HTP2, HCT2",stations11:"HDT3, HHO3, HLA2, HTP2",  pattern:"RECURRING", signal:"Two consecutive weeks, expanding to 4 stations. Diesel tractor cold-start need. Stock at all tractor-fleet sites." },
+                  { name:"Door Assembly - Cab Or Front",    wk10:6,  wk11:5,  stations10:"HDT3, HLA2",       stations11:"HDT3, HCT2, HLA2",        pattern:"RECURRING", signal:"Two consecutive weeks at near-identical volume. HDT3 and HLA2 consistent — physical damage or fleet age pattern. Consider Connex stock at HDT3." },
+                  { name:"Battery & Cables",                wk10:0,  wk11:8,  stations10:"—",                stations11:"HTP2",                    pattern:"NEW",       signal:"8 hits all at HTP2 in first appearance. Likely tractor fleet battery cycle. Confirm whether this is scheduled or failure-driven before stocking." },
+                  { name:"Rotor - Disc Brakes, Front",      wk10:6,  wk11:3,  stations10:"HCL2, HHO3",       stations11:"HDT3, HHO3",              pattern:"RECURRING", signal:"Recurring and shifting stations — HHO3 persistent, HCL2 resolved, HDT3 newly added. Align with backing plate signal at HDT3." },
+                  { name:"Gauges & Warning Devices",        wk10:0,  wk11:7,  stations10:"—",                stations11:"HDT3, HHO3, HCT2, HMS2",  pattern:"NEW",       signal:"Multi-site gauge and warning light failures. Diesel emissions/aftertreatment systems. Spread across 4 stations in first appearance — monitor WK12 closely." },
+                  { name:"Indicator - Readiness Light",     wk10:5,  wk11:0,  stations10:"HTP2, HDY1",       stations11:"—",                       pattern:"RESOLVED",  signal:"WK10 emissions readiness signal at 2 stations — zero WK11. Resolved or deferred. Confirm completion before removing from watch." },
+                  { name:"Pad - Front Disc Brake",          wk10:4,  wk11:0,  stations10:"HCL2, HHO3",       stations11:"—",                       pattern:"RESOLVED",  signal:"Brake pad replacements at HCL2 and HHO3 in WK10 — zero WK11. Consistent with HHO3 full brake rebuild completing WK10. Monitor for next cycle." },
+                  { name:"Element - Fuel Filter, Primary",  wk10:0,  wk11:4,  stations10:"—",                stations11:"HDT3, HHO3, HLA2",        pattern:"NEW",       signal:"Primary fuel filter element across 3 stations. Diesel contamination or maintenance cadence gap. Consider Connex stocking at diesel-heavy sites." },
+                  { name:"Sensor - Engine Position/Timing", wk10:3,  wk11:0,  stations10:"HDT3, HHO3",       stations11:"—",                       pattern:"RESOLVED",  signal:"Engine position sensors at HDT3 and HHO3 in WK10 — resolved WK11. Confirm WOs closed." },
+                ].map((p,i) => {
+                  const wow = p.wk11 - p.wk10;
+                  const wowColor = wow > 0 ? c.green : wow < 0 ? c.red : c.textMuted;
+                  const patternCfg = {
+                    RECURRING: { bg:"#FFF7ED",   color:c.orange,    border:"#FED7AA",     label:"↻ RECURRING" },
+                    NEW:       { bg:c.redBg,     color:c.red,       border:"#FECACA",     label:"⚠ NEW" },
+                    RESOLVED:  { bg:c.elevated,  color:c.textMuted, border:c.borderLight, label:"✓ RESOLVED" },
+                  };
+                  const pc = patternCfg[p.pattern];
+                  const stationsDisplay = p.wk11 > 0 ? p.stations11 : p.stations10;
+                  return (
+                    <tr key={i} style={{ background: p.pattern==="RESOLVED"?"rgba(0,0,0,0.015)":"transparent" }}>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,fontWeight:600,color:p.pattern==="RESOLVED"?c.textMuted:c.text }}>{p.name}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:p.wk10===0?c.textMuted:c.textSec }}>{p.wk10===0?"—":p.wk10}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:p.wk11===0?c.textMuted:c.blue }}>{p.wk11===0?"—":p.wk11}</td>
+                      <td style={{ fontSize:13,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:wowColor }}>{p.wk10===0||p.wk11===0?"—":(wow>0?"+":"")+wow}</td>
+                      <td style={{ padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,whiteSpace:"nowrap" }}>
+                        <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:pc.bg,color:pc.color,border:`1px solid ${pc.border}` }}>{pc.label}</span>
+                      </td>
+                      <td style={{ fontSize:12,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,fontFamily:"'JetBrains Mono',monospace",color:c.purple,whiteSpace:"nowrap" }}>{stationsDisplay}</td>
+                      <td style={{ fontSize:12,padding:"10px 14px",borderBottom:`1px solid ${c.borderLight}`,color:c.textSec,lineHeight:1.4,maxWidth:320 }}>{p.signal}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Station Stocking Profiles */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Station Stocking Profiles</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>WK11 Actuals · Connex Stocking Guidance</span>
+          </div>
+          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(320px,1fr))",gap:12,marginBottom:24 }}>
+            {[
+              { station:"HLA2", c_total:8, r_total:40,
+                consumables:["Additive - Engine Oil (4×)","Housing - Engine Oil Filter (2×)","Filter - Fuel Filter, Water Separator (2×)"],
+                repair:["Label - Smog Index (6×) — emissions compliance","Case - Primary Fuel Filter (3×)","Bracket - Roller, Lower, Roll-Up Rear Door (2×)","Shock Absorber Assembly - Rear (2×)"],
+                insight:"Repair-dominant this week — high repair touch count relative to consumables. Label - Smog Index leading repair at 6 hits suggests CDV fleet emissions compliance is a scheduled task driving WOs. Fuel system filter demand remains consistent." },
+              { station:"HAU1", c_total:34, r_total:20,
+                consumables:["Fitting - Differential (9×)","Fluid - Hydraulic Brake (8×)","Filter - Cabin Air, Cab (7×)","Fluid - Automatic Transmission (4×)","Housing - Engine Oil Filter (3×)"],
+                repair:["U-Bolt (3×) — structural wear returning","Water (2×)","Lock - Differential (2×)","Module - NOx Sensor (1×)"],
+                insight:"Consumable-dominant profile with strong fluid service demand. Fitting - Differential leads at 9 hits — HAU1-specific pattern. U-Bolt returning to repair watch after WK10 absence. NOx sensor module appearing for first time — watch for recurrence." },
+              { station:"HDT3", c_total:8, r_total:56,
+                consumables:["Oil - Engine (3×)","Filter Assembly - Oil, Full Flow (3×)","Fluid - Automatic Transmission (1×)","Fluid - Differential (1×)"],
+                repair:["Backing Plate - Front Brake (8×) — new pattern, dominant","Gauges & Warning Devices (4×)","Door Assembly - Cab Or Front (3×)","Lamp - Clearance (3×)","Sensor - NOx, Upstream (2×)"],
+                insight:"Repair-dominant flip from WK10 PM-surge. Brake backing plate (8 hits) is the most significant new repair signal in the network — all at HDT3. Evaluate whether new tech starting 3/16 is encountering deferred work. Door assemblies and clearance lamps are recurring." },
+              { station:"HCL2", c_total:19, r_total:29,
+                consumables:["Fluid - Hydraulic Brake (7×)","Filter - Cabin Air, Cab (5×)","Fluid - Automatic Transmission (3×)","Housing - Engine Oil Filter (1×)","Oil - Engine (1×)"],
+                repair:["Warning Light - Service Indicator (2×)","Plate - U-Bolt, Leaf Spring (2×)","Spring - Leaf, Rear (2×)","Drum - Rear Brake (2×)","Shoe - Rear Brake (2×)"],
+                insight:"Hydraulic brake fluid leads consumables — consistent with WK10 brake system focus. Rear brake drum and shoe appearing alongside leaf spring repair signals structural suspension and brake wear. Solo tech constraint likely contributing to repair backlog concentration." },
+              { station:"HDY1", c_total:3, r_total:12,
+                consumables:["Housing - Engine Oil Filter (2×)","Lamp - Marker (1×)"],
+                repair:["Filter - Crankcase Ventilation (1×)","Water (1×)","Filter - Fuel, Final (1×)","Belt - Water Pump (1×)","Loom - Wiring Or Wiring Harness (1×)"],
+                insight:"Very low parts volume — 3 consumable, 12 repair touches across 15 calls. Repair profile is scattered with no dominant pattern. Water pump belt and wiring harness are watch items. Low consumable rate may indicate inspect-heavy workflow rather than full service completion." },
+              { station:"HTP2", c_total:2, r_total:29,
+                consumables:["Housing - Engine Oil Filter (1×)","Wiper Blade Assembly (1×)"],
+                repair:["Battery & Cables (8×) — station-specific surge","Ether Injector Assembly (2×)","Brace - Bumper, Front (2×)","Sensor - DPF Temperature, Upstream (1×)","Backing Plate - Front Brake (1×)"],
+                insight:"Battery & Cables dominating at 8 hits — all at HTP2, likely a fleet-wide battery replacement cycle on tractor units. Ether injector recurring. Front bumper brace appearing for first time — physical damage signal. Volume dip (58→23 WOs) with repair-heavy mix suggests complex jobs this week." },
+              { station:"HHO3", c_total:27, r_total:20,
+                consumables:["Filter - Cabin Air, Cab (9×) — dominant","Additive - Engine Oil (6×)","Fluid - Hydraulic Brake (4×)","Fluid - Automatic Transmission (4×)","Element - Air Filter (2×)"],
+                repair:["Element - Fuel Filter, Primary (2×)","Ether Injector Assembly (1×)","Cap - Corner Post (1×)","Gauges & Warning Devices (1×)"],
+                insight:"Cabin air filter demand surging to 9 hits — highest single consumable at any station this week. Additive - Engine Oil at 6 hits alongside oil change activity. Repair activity lighter than WK10 brake rebuild week — fleet appears stabilized post brake system work." },
+              { station:"HCT2", c_total:2, r_total:9,
+                consumables:["Fluid - Automatic Transmission (1×)","Blade Set - Windshield Wiper (1×)"],
+                repair:["Gauges & Warning Devices (1×)","Door Assembly - Cab Or Front (1×)","Backing Plate - Front Brake (1×)","Safety Equipment (1×)","Headlamp & Housing Assembly (1×)"],
+                insight:"Very low volume week — Eugene primarily deployed at HCL2. Harvey holding HCT2 with 7 WOs. Parts profile is scattered repair with no dominant pattern. Low consumable count consistent with reduced PM activity when primary tech is elsewhere." },
+              { station:"HSL1", c_total:9, r_total:17,
+                consumables:["Filter - Cabin Air, Cab (5×)","Housing - Engine Oil Filter (1×)","Oil - Engine (1×)","Conditioner - Brake Fluid (1×)","Sending Unit - Fluid Level, Brake (1×)"],
+                repair:["Trough - Oil, Differential, Rear Axle (5×) — new dominant pattern","Gasket - Differential Carrier (3×)","Element - Filter, Engine Air Cleaner (2×)","Gasket Set - Differential Carrier (2×)"],
+                insight:"Rear differential oil trough and carrier gasket combination (8 hits combined) is a significant new repair signal unique to HSL1 this week. Suggests rear axle differential service is a scheduled activity at this site. Cabin air filter is the reliable consumable stock item." },
+              { station:"HMK4", c_total:4, r_total:12,
+                consumables:["Housing - Engine Oil Filter (2×)","Oil - Engine (1×)","Additive - Engine Oil (1×)"],
+                repair:["Plate - Retainer, Door Weatherstrip (5×) — HMK4-specific","LED - Headlamp (1×)","Stop Light Assembly (1×)","Camera - Visual Assist Back-Up Camera (1×)"],
+                insight:"Door weatherstrip retainer plate is the dominant repair at 5 hits — all at HMK4, suggesting a fleet-specific door wear pattern. Camera back-up system appearing for first time. TAT regression to 2.53d this week warrants investigation alongside this repair profile." },
+              { station:"HMS2", c_total:0, r_total:5,
+                consumables:[],
+                repair:["Gauges & Warning Devices (1×)","Cylinder - Automatic Oil Change (1×)","Wrap - Air Filter (1×)","Wiring Harness - Front Lights (1×)","Cover - Base, Spot Lamp (1×)"],
+                insight:"Minimal data — 2 Towbook calls, 3 Fleet IQ WOs. Parts profile is scattered repair. No consumable touches recorded. TAT dramatically improved with second tech arrival. 8 leaked WOs this week — DSP engagement is the priority, not parts." },
+            ].map((s,i) => {
+              const stColor = STATION_DATA.find(sd=>sd.station===s.station)?.color || c.textMuted;
+              return (
+                <div key={i} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:12,padding:16,borderTop:`3px solid ${stColor}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                  <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10 }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:20,fontWeight:700,color:stColor }}>{s.station}</span>
+                    <div style={{ display:"flex",gap:6 }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>{s.c_total} consumable</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:"#FFF7ED",color:c.orange,border:"1px solid #FED7AA" }}>{s.r_total} repair</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.green,marginBottom:5 }}>Stock These</div>
+                  {s.consumables.length > 0
+                    ? <ul style={{ margin:"0 0 10px",padding:"0 0 0 14px" }}>
+                        {s.consumables.map((item,j) => <li key={j} style={{ fontSize:12,color:c.textSec,marginBottom:3,lineHeight:1.4 }}>{item}</li>)}
+                      </ul>
+                    : <p style={{ fontSize:12,color:c.textMuted,marginBottom:10,fontStyle:"italic" }}>No consumable data this week</p>
+                  }
+                  <div style={{ fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.orange,marginBottom:5 }}>Repair Watch</div>
+                  <ul style={{ margin:"0 0 10px",padding:"0 0 0 14px" }}>
+                    {s.repair.map((item,j) => <li key={j} style={{ fontSize:12,color:c.textSec,marginBottom:3,lineHeight:1.4 }}>{item}</li>)}
+                  </ul>
+                  <div style={{ fontSize:12,color:c.textMuted,borderTop:`1px solid ${c.borderLight}`,paddingTop:8,lineHeight:1.5,fontStyle:"italic" }}>{s.insight}</div>
+                </div>
+              );
+            })}
+          </div>
+        </>}
+
+        {/* ACTIONS */}
+        {tab === "actions" && <>
+          <div style={{ display:"flex",gap:12,marginBottom:18,flexWrap:"wrap" }}>
+            <ScoreCard label="Critical" value={ACTIONS.filter(a=>a.priority==="Critical").length} accent={c.red} />
+            <ScoreCard label="High" value={ACTIONS.filter(a=>a.priority==="High").length} accent={c.orange} />
+            <ScoreCard label="In Progress" value={ACTIONS.filter(a=>a.status==="In Progress").length} accent={c.purple} />
+            <ScoreCard label="New This Week" value={ACTIONS.filter(a=>a.priorWeek==="New").length} accent={c.cyan} sub="From WK11 data" />
+            <ScoreCard label="Completed (All Time)" value={COMPLETED_ACTIONS.length} accent={c.green} />
+            <ScoreCard label="Amazon Asks" value={AMAZON_ASKS.length} accent={c.cyan} sub="2 open" />
+          </div>
+
+          <div style={{ display:"flex",gap:8,marginBottom:16,flexWrap:"wrap" }}>
+            {["all","critical","high","medium"].map(f => (
+              <button key={f} onClick={() => setActionFilter(f)} style={{ fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,padding:"7px 16px",borderRadius:8,border:`1px solid ${actionFilter===f?c.purple:c.border}`,background:actionFilter===f?c.purpleBg:c.card,color:actionFilter===f?c.purple:c.textMuted,cursor:"pointer",transition:"all 0.2s",textTransform:"capitalize" }}>
+                {f === "all" ? `All (${ACTIONS.length})` : `${f.charAt(0).toUpperCase()+f.slice(1)} (${ACTIONS.filter(a=>a.priority.toLowerCase()===f).length})`}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display:"flex",flexDirection:"column",gap:8,marginBottom:28 }}>
+            {filteredActions.map(a => {
+              const priorityColor = a.priority==="Critical" ? c.red : a.priority==="High" ? c.orange : c.amber;
+              const priorityBg = a.priority==="Critical" ? c.redBg : a.priority==="High" ? "#FFF7ED" : c.amberBg;
+              const priorityBorder = a.priority==="Critical" ? "#FECACA" : a.priority==="High" ? "#FED7AA" : "#FDE68A";
+              return (
+                <div key={a.id} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"14px 18px",display:"grid",gridTemplateColumns:"36px 1fr auto",gap:14,alignItems:"center",boxShadow:"0 1px 3px rgba(0,0,0,0.03)",borderLeft:`4px solid ${priorityColor}` }}>
+                  <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700,color:c.purple,background:c.purpleBg,border:`1px solid ${c.purpleBorder}`,borderRadius:6,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{a.id}</div>
+                  <div>
+                    <div style={{ fontSize:13,fontWeight:600,color:c.text,lineHeight:1.4,marginBottom:6 }}>{a.name}</div>
+                    <div style={{ display:"flex",gap:6,flexWrap:"wrap",alignItems:"center" }}>
+                      <Pill type={a.status==="In Progress"?"improving":"miss"}>{a.status}</Pill>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,background:c.elevated,padding:"2px 8px",borderRadius:4,border:`1px solid ${c.borderLight}` }}>{a.kpi}</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,background:c.elevated,padding:"2px 8px",borderRadius:4,border:`1px solid ${c.borderLight}` }}>{a.owner}</span>
+                      {a.priorWeek==="New" && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:c.cyan,background:c.cyanBg,padding:"2px 8px",borderRadius:4,border:`1px solid ${c.cyanBorder}` }}>NEW</span>}
+                      {a.priorWeek==="Carried" && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:c.amber,background:c.amberBg,padding:"2px 8px",borderRadius:4,border:"1px solid #FDE68A" }}>CARRIED</span>}
+                    </div>
+                    <div style={{ fontSize:12,color:c.textMuted,marginTop:6,lineHeight:1.5 }}>{a.impact}</div>
+                  </div>
+                  <div style={{ textAlign:"center",flexShrink:0 }}>
+                    <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"4px 10px",borderRadius:6,background:priorityBg,color:priorityColor,border:`1px solid ${priorityBorder}`,whiteSpace:"nowrap" }}>{a.priority}</div>
+                    <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:c.textMuted,marginTop:4 }}>Due {a.due}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Amazon Asks */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Amazon Asks</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.cyanBg,color:c.cyan,border:`1px solid ${c.cyanBorder}` }}>2 Open · Tracking Until Resolved</span>
+          </div>
+          <div style={{ display:"flex",flexDirection:"column",gap:8,marginBottom:28 }}>
+            {AMAZON_ASKS.map(a => {
+              const sc = a.status==="In Progress" ? c.green : a.status==="Closed" ? c.textMuted : c.cyan;
+              const sb = a.status==="In Progress" ? c.greenBg : a.status==="Closed" ? c.elevated : c.cyanBg;
+              const sbr = a.status==="In Progress" ? "#A7F3D0" : a.status==="Closed" ? c.borderLight : c.cyanBorder;
+              const pc = a.priority==="High" ? c.orange : c.red;
+              const pb = a.priority==="High" ? "#FFF7ED" : c.redBg;
+              const pbr = a.priority==="High" ? "#FED7AA" : "#FECACA";
+              return (
+                <div key={a.id} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"14px 18px",display:"grid",gridTemplateColumns:"36px 1fr auto",gap:14,alignItems:"center",boxShadow:"0 1px 3px rgba(0,0,0,0.03)",borderLeft:`4px solid ${c.cyan}` }}>
+                  <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700,color:c.cyan,background:c.cyanBg,border:`1px solid ${c.cyanBorder}`,borderRadius:6,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{a.id}</div>
+                  <div>
+                    <div style={{ fontSize:13,fontWeight:600,color:c.text,lineHeight:1.4,marginBottom:6 }}>{a.ask}</div>
+                    <div style={{ display:"flex",gap:6,flexWrap:"wrap",alignItems:"center" }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:4,background:sb,color:sc,border:`1px solid ${sbr}` }}>{a.status}</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,background:c.elevated,padding:"2px 8px",borderRadius:4,border:`1px solid ${c.borderLight}` }}>{a.owner}</span>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,background:c.elevated,padding:"2px 8px",borderRadius:4,border:`1px solid ${c.borderLight}` }}>Submitted {a.submitted}</span>
+                    </div>
+                    {a.notes && <div style={{ fontSize:12,color:c.textMuted,marginTop:6,lineHeight:1.5 }}>{a.notes}</div>}
+                  </div>
+                  <div style={{ textAlign:"center",flexShrink:0 }}>
+                    <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"4px 10px",borderRadius:6,background:pb,color:pc,border:`1px solid ${pbr}`,whiteSpace:"nowrap" }}>{a.priority}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Completed Actions */}
+          <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+            <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Completed Actions</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>{COMPLETED_ACTIONS.length} Closed</span>
+          </div>
+          <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
+            {COMPLETED_ACTIONS.map(a => (
+              <div key={a.id} style={{ background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"12px 18px",display:"grid",gridTemplateColumns:"1fr auto",gap:12,alignItems:"center",opacity:0.8,borderLeft:`4px solid ${c.green}` }}>
+                <div>
+                  <div style={{ fontSize:13,fontWeight:600,color:c.text,marginBottom:4 }}>{a.name}</div>
+                  <div style={{ fontSize:12,color:c.textSec }}>{a.result}</div>
+                </div>
+                <div style={{ textAlign:"right",flexShrink:0 }}>
+                  <Pill type="hit">Completed</Pill>
+                  <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:c.textMuted,marginTop:4 }}>{a.completed}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {/* ESCALATIONS */}
+        {tab === "escalations" && (() => {
+          const wk11Esc = ESCALATIONS.filter(e => e.week === "WK11");
+          const priorEsc = ESCALATIONS.filter(e => e.week !== "WK11");
+          const byStation = ESCALATIONS.reduce((acc, e) => { acc[e.station] = (acc[e.station]||0)+1; return acc; }, {});
+          const byDsp = ESCALATIONS.reduce((acc, e) => { acc[e.dsp] = (acc[e.dsp]||0)+1; return acc; }, {});
+          const byCat = ESCALATIONS.reduce((acc, e) => { acc[e.category] = (acc[e.category]||0)+1; return acc; }, {});
+
+          const EscCard = ({ e, highlight }) => {
+            const catColor = e.category === "Quality of Work" ? c.red : e.category === "Communication Issue" ? c.orange : c.amber;
+            const catBg    = e.category === "Quality of Work" ? c.redBg : e.category === "Communication Issue" ? "#FFF7ED" : c.amberBg;
+            const catBdr   = e.category === "Quality of Work" ? "#FECACA" : e.category === "Communication Issue" ? "#FED7AA" : "#FDE68A";
+            return (
+              <div style={{ background:c.card,border:`1px solid ${highlight?catColor:c.border}`,borderRadius:10,padding:"14px 18px",borderLeft:`4px solid ${catColor}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)",marginBottom:10 }}>
+                <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8,marginBottom:10 }}>
+                  <div style={{ display:"flex",alignItems:"center",gap:8,flexWrap:"wrap" }}>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:700,color:c.purple }}>{e.id}</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:c.purpleBg,color:c.purple,border:`1px solid ${c.purpleBorder}` }}>{e.station}</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:c.elevated,color:c.textSec,border:`1px solid ${c.borderLight}` }}>{e.dsp}</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:catBg,color:catColor,border:`1px solid ${catBdr}` }}>{e.category}</span>
+                    {highlight && <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:c.cyanBg,color:c.cyan,border:`1px solid ${c.cyanBorder}` }}>WK11</span>}
+                  </div>
+                  <div style={{ display:"flex",alignItems:"center",gap:8,flexShrink:0 }}>
+                    <span style={{ fontSize:11,color:c.textMuted,fontFamily:"'JetBrains Mono',monospace" }}>{e.date}</span>
+                    <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:c.greenBg,color:c.green,border:"1px solid #A7F3D0" }}>Closed</span>
+                  </div>
+                </div>
+                <div style={{ fontSize:13,color:c.text,fontWeight:600,lineHeight:1.5,marginBottom:6 }}>{e.summary}</div>
+                {e.detail && <div style={{ fontSize:12,color:c.textMuted,lineHeight:1.5,borderTop:`1px solid ${c.borderLight}`,paddingTop:6,marginTop:4 }}>{e.detail}</div>}
+                <div style={{ fontSize:11,color:c.textMuted,marginTop:6 }}>Owner: {e.owner} · Resp SLA: {e.respSla?"✅":"❌"} · Res SLA: {e.resSla?"✅":"❌"}</div>
+              </div>
+            );
+          };
+
+          return (
+            <>
+              {/* Summary KPIs */}
+              <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+                <ScoreCard label="Total Escalations" value={ESCALATIONS.length} accent={c.purple} sub="All tracked weeks" />
+                <ScoreCard label="WK11 Escalations" value={wk11Esc.length} accent={c.red} sub="Mar 8–14 submissions" />
+                <ScoreCard label="Top Station" value="HTP2" accent={c.orange} sub={`${byStation['HTP2']||0} of ${ESCALATIONS.length} total`} />
+                <ScoreCard label="Top DSP" value="ORMP" accent={c.red} sub={`${byDsp['ORMP']||0} escalations · HTP2`} />
+                <ScoreCard label="All Closed" value="100%" accent={c.green} sub="Resp & Res SLA met on all" />
+              </div>
+
+              {/* Pattern Alert */}
+              <div style={{ background:"linear-gradient(135deg,#FEF2F2,#FFF7ED)",border:`1px solid #FECACA`,borderRadius:12,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"flex-start",gap:12 }}>
+                <span style={{ fontSize:20,flexShrink:0 }}>⚠️</span>
+                <div>
+                  <div style={{ fontWeight:700,fontSize:14,color:c.red,marginBottom:4 }}>ORMP / HTP2 — Systemic Pattern Across 10 Escalations</div>
+                  <div style={{ fontSize:13,color:"#7F1D1D",lineHeight:1.6 }}>
+                    Every escalation in the log except one (HDT3-SFR, SFRM) is from ORMP at HTP2. Two failure modes repeat across every case:
+                    (1) <strong>Kooner unresponsive in Chime</strong> — ORMP explicitly noted this is the norm, not the exception.
+                    (2) <strong>Documentation/paperwork quality</strong> — wrong paperwork returned, WOs disappeared from daily list, repairs not confirmed complete.
+                    These cases are all closed and SLA-met, but the underlying issues are not resolved — ORMP is still escalating the same categories in WK11.
+                  </div>
+                </div>
+              </div>
+
+              {/* Category breakdown */}
+              <div style={{ display:"flex",gap:12,marginBottom:20,flexWrap:"wrap" }}>
+                {Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,cnt]) => {
+                  const cc = cat==="Quality of Work"?c.red:cat==="Communication Issue"?c.orange:c.amber;
+                  const cb = cat==="Quality of Work"?c.redBg:cat==="Communication Issue"?"#FFF7ED":c.amberBg;
+                  return (
+                    <div key={cat} style={{ flex:1,minWidth:160,background:c.card,border:`1px solid ${c.border}`,borderRadius:10,padding:"12px 16px",borderTop:`3px solid ${cc}`,boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+                      <div style={{ fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em",color:c.textMuted,marginBottom:4 }}>{cat}</div>
+                      <div style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:26,fontWeight:800,color:cc }}>{cnt}</div>
+                      <div style={{ fontSize:11,color:c.textMuted,marginTop:4 }}>{Math.round(cnt/ESCALATIONS.length*100)}% of all escalations</div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* WK11 Escalations */}
+              <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+                <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>WK11 Escalations</span>
+                <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.redBg,color:c.red,border:"1px solid #FECACA" }}>{wk11Esc.length} Cases · Mar 8–14 · All HTP2 / ORMP</span>
+              </div>
+              <div style={{ marginBottom:28 }}>
+                {wk11Esc.map((e,i) => <EscCard key={i} e={e} highlight={true} />)}
+              </div>
+
+              {/* Prior Escalations */}
+              <div style={{ display:"flex",alignItems:"center",gap:10,margin:"0 0 12px",paddingBottom:8,borderBottom:`1px solid ${c.borderLight}` }}>
+                <span style={{ fontSize:14,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:c.textSec }}>Prior Escalations</span>
+                <span style={{ fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:5,background:c.elevated,color:c.textMuted,border:`1px solid ${c.borderLight}` }}>{priorEsc.length} Cases · Context & Pattern</span>
+              </div>
+              <div>
+                {priorEsc.map((e,i) => <EscCard key={i} e={e} highlight={false} />)}
+              </div>
+            </>
+          );
+        })()}
+
+      </div>
+
+      <div style={{ textAlign:"center",padding:24,fontSize:12,color:c.textMuted,borderTop:`1px solid ${c.borderLight}` }}>
+        Kooner Fleet Management Solutions · Last Mile Operations Dashboard · WK11 · Mar 8 – Mar 14, 2026 · WBR Wed Mar 18 @ 3:30 PM CST
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Dashboard />);
+</script>
+</body>
+</html>
