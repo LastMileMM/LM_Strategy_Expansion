@@ -270,7 +270,7 @@ strong { font-weight: 700; color: var(--text-primary); }
     <div class="top-header-divider"></div>
     <span class="top-header-title">Last Mile Growth &amp; Expansion</span>
   </div>
-  <div class="top-header-right">WK12 &nbsp;·&nbsp; Updated March 24, 2026</div>
+  <div class="top-header-right">WK13 &nbsp;·&nbsp; Updated March 31, 2026</div>
 </div>
 
 <!-- TAB NAV -->
@@ -279,7 +279,7 @@ strong { font-weight: 700; color: var(--text-primary); }
   <button class="tab-btn" onclick="showTab('strategy')">📋 Strategy</button>
   <button class="tab-btn" onclick="showTab('strategy_actions')">🎯 Strategic Actions</button>
   <button class="tab-btn" onclick="showTab('stations')">📍 Stations &amp; DSPs</button>
-  <button class="tab-btn" onclick="showTab('ops_actions')">✅ Operational Actions</button>
+  <button class="tab-btn" onclick="showTab('ops_actions')">📋 Open Operational Items</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════ -->
@@ -288,27 +288,27 @@ strong { font-weight: 700; color: var(--text-primary); }
 <div id="overview" class="tab-content active">
 
   <div class="section">
-    <div class="section-label">WK12 Snapshot &nbsp;·&nbsp; <span style="color:var(--green);font-size:10px;">↓10 ROs vs WK11</span></div>
+    <div class="section-label">WK13 Snapshot &nbsp;·&nbsp; <span style="color:var(--orange);font-size:10px;">No leakage report · WBR signal data</span></div>
     <div class="grid-4">
       <div class="kpi-card">
-        <div class="kpi-label">Leaked ROs This Week</div>
-        <div class="kpi-value" style="color:var(--red);">48</div>
-        <div class="kpi-sub" style="color:var(--green);">↓10 vs WK11 (58)</div>
+        <div class="kpi-label">Adoption Rate</div>
+        <div class="kpi-value" style="color:var(--orange);">69%</div>
+        <div class="kpi-sub" style="color:var(--red);">↓3pp vs WK12 (72%) · WBR confirmed</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Stations with Leakage</div>
-        <div class="kpi-value" style="color:var(--orange);">10</div>
-        <div class="kpi-sub" style="color:var(--red);">↑1 vs WK11 (9)</div>
+        <div class="kpi-label">Leakage Report</div>
+        <div class="kpi-value" style="color:var(--gray);font-size:24px;margin-top:8px;">Not provided</div>
+        <div class="kpi-sub">Using WBR signal data</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">ARMA Concentration</div>
-        <div class="kpi-value" style="color:var(--red);">42%</div>
-        <div class="kpi-sub">20 of 48 ROs — HLA2 escalating</div>
+        <div class="kpi-label">Contract-Risk Event</div>
+        <div class="kpi-value" style="color:var(--red);">1</div>
+        <div class="kpi-sub">ORMP vehicle grounded — HTP2</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Road Service Events Lost</div>
-        <div class="kpi-value" style="color:var(--purple);">6</div>
-        <div class="kpi-sub">No change vs WK11</div>
+        <div class="kpi-label">Zero-Coverage Stations</div>
+        <div class="kpi-value" style="color:var(--red);">1</div>
+        <div class="kpi-sub">HIN3 — Severance absent</div>
       </div>
     </div>
   </div>
@@ -317,37 +317,40 @@ strong { font-weight: 700; color: var(--text-primary); }
 
     <!-- Leakage by Category -->
     <div class="card">
-      <div class="card-title">📋 Leaked Work by Category — WK12</div>
+      <div class="card-title">📋 WK13 Service Quality Signals — WBR Survey Data</div>
+      <div class="callout callout-yellow" style="margin-bottom:14px;font-size:12px;">
+        No leakage report provided by Amazon this week. The signals below are drawn from WBR JotForm survey responses and operational data.
+      </div>
       <div style="margin-bottom:14px;">
         <div class="trend-bar-row">
-          <div class="trend-bar-label">PM</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:35%;background:var(--red);">17 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--red);">35%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">ORMP TAT</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:92%;background:var(--red);">4.6d avg van PM · 1/5 timeliness</div></div>
+          <div class="trend-bar-val" style="color:var(--red);">🚨</div>
         </div>
         <div class="trend-bar-row">
-          <div class="trend-bar-label">Null</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:33%;background:var(--purple);">16 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--purple);">33%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">SFRM Qual</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:80%;background:var(--red);">2 safety failures · 2/5 satisfaction</div></div>
+          <div class="trend-bar-val" style="color:var(--red);">🚨</div>
         </div>
         <div class="trend-bar-row">
-          <div class="trend-bar-label">Diag</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:10%;background:var(--blue);">5 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--blue);">10%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">HIN3</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:100%;background:var(--purple);">Zero WOs · Severance absent · JBXL leaking</div></div>
+          <div class="trend-bar-val" style="color:var(--purple);">⚠️</div>
         </div>
         <div class="trend-bar-row">
-          <div class="trend-bar-label">Brakes</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:10%;background:var(--orange);">5 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--orange);">10%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">HPD1</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:70%;background:var(--orange);">TAT 7.16d · Ward external · JDTC still leaking</div></div>
+          <div class="trend-bar-val" style="color:var(--orange);">⚠️</div>
         </div>
         <div class="trend-bar-row">
-          <div class="trend-bar-label">Body</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:6%;background:#cbd5e0;">3 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--gray);">6%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">HTP2</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:50%;background:var(--orange);">13 SM reschedulings · station record</div></div>
+          <div class="trend-bar-val" style="color:var(--orange);">⚠️</div>
         </div>
         <div class="trend-bar-row">
-          <div class="trend-bar-label">Elec</div>
-          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:4%;background:#cbd5e0;">2 ROs</div></div>
-          <div class="trend-bar-val" style="color:var(--gray);">4%</div>
+          <div class="trend-bar-label" style="width:60px;font-size:11px;">Adoption</div>
+          <div class="trend-bar-track"><div class="trend-bar-fill" style="width:45%;background:var(--blue);">69% · ↓3pp WoW · target 85%</div></div>
+          <div class="trend-bar-val" style="color:var(--blue);">69%</div>
         </div>
       </div>
     </div>
@@ -377,24 +380,24 @@ strong { font-weight: 700; color: var(--text-primary); }
   <!-- Fleet + Root Cause -->
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">🚛 Fleet Profile of Leaked Units</div>
+      <div class="card-title">🚛 WK13 Kooner Fleet Mix — All Stations</div>
       <div class="trend-bar-row" style="margin-top:8px;">
         <div class="trend-bar-label" style="width:80px;text-align:left;">Box Truck</div>
-        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:67%;background:var(--blue);">32 units</div></div>
-        <div class="trend-bar-val">67%</div>
+        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:54%;background:var(--blue);">135 units</div></div>
+        <div class="trend-bar-val">54%</div>
       </div>
       <div class="trend-bar-row">
-        <div class="trend-bar-label" style="width:80px;text-align:left;">CDV</div>
-        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:29%;background:var(--green);">14 units</div></div>
-        <div class="trend-bar-val">29%</div>
+        <div class="trend-bar-label" style="width:80px;text-align:left;">Cargo</div>
+        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:45%;background:var(--green);">112 units</div></div>
+        <div class="trend-bar-val">45%</div>
       </div>
       <div class="trend-bar-row">
-        <div class="trend-bar-label" style="width:80px;text-align:left;">CV</div>
-        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:4%;background:var(--orange);">2</div></div>
-        <div class="trend-bar-val">4%</div>
+        <div class="trend-bar-label" style="width:80px;text-align:left;">Tractor</div>
+        <div class="trend-bar-track"><div class="trend-bar-fill" style="width:1%;background:var(--orange);">2</div></div>
+        <div class="trend-bar-val">1%</div>
       </div>
       <div style="margin-top:14px;padding:10px 14px;background:var(--bg);border-radius:6px;font-size:13px;color:var(--text-secondary);">
-        <strong>Model Years:</strong> 2021 (24), 2020 (17), 2022 (7) — Hino box trucks now 67% of leaked units
+        <strong>Note:</strong> Fleet mix from WBR (249 total WOs). HAU1 shifted to all-box this week — fleet mix at individual stations continues to evolve. Leakage fleet breakdown unavailable without Amazon report.
       </div>
     </div>
 
@@ -423,203 +426,187 @@ strong { font-weight: 700; color: var(--text-primary); }
 <!-- ═══════════════════════════════════════════════ -->
 <div id="stations" class="tab-content">
 
-  <div class="section-label">Station Recovery — WK12 &nbsp;·&nbsp; <span style="color:var(--green);font-size:10px;">HAU1 cleared ✓ &nbsp;|&nbsp; HLA2 escalating ↑</span></div>
+  <div class="section-label">Station & DSP Signal — WK13 &nbsp;·&nbsp; <span style="color:var(--orange);font-size:10px;">No leakage report · WBR-derived insights</span></div>
+
+  <div class="callout callout-yellow" style="margin-bottom:20px;">
+    Amazon did not provide a leakage report for WK13. Station diagnoses and DSP signals below are drawn from WBR Fleet IQ data, JotForm DSP survey responses, and operational action items. Leakage RO counts will resume when the report is available.
+  </div>
 
   <div class="grid-2">
 
     <div class="station-card critical">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
-          <div class="station-name">HLA2 <span style="font-size:13px;color:var(--red);">↑9 vs WK11</span></div>
-          <div class="station-meta">20 ROs lost · ARMA (20, 100%) · Mostly NON-PM · Hino-heavy · 7 repeat VINs</div>
+          <div class="station-name">HTP2 <span style="font-size:13px;color:var(--red);">CONTRACT RISK</span></div>
+          <div class="station-meta">34 Kooner WOs · 0.90d Med TAT · 13 SM reschedulings (station record) · ORMP</div>
         </div>
-        <span class="tag tag-red">CRITICAL · ESCALATING</span>
+        <span class="tag tag-red">CRITICAL · VEHICLE GROUNDED</span>
       </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> ARMA has gone from 9 to 20 ROs in one week — every single leaked RO at HLA2 is ARMA. This is no longer drift; it is a full disconnection. The mix includes PM, engine diagnostics, and NON-PM reactive work. 7 VINs appear multiple times (4 of which appeared 2–4 times), confirming ARMA has an active maintenance relationship with another vendor.</p>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> ORMP filed a JotForm survey (3/30) confirming a van PM submitted 3/23 was not completed until 3/30 despite 3 escalations — Amazon grounded the vehicle. ORMP reports average van PM TAT in March of 4.6 days, against a 1,000-mile service window with 300-mile daily routes. This is a contract-risk event, not a service quality note. HTP2's SM reschedulings hit 13 — the highest ever at this station. ORMP rated timeliness 1/5.</p>
       <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
       <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. <strong>Escalate immediately</strong> — senior Kooner contact must own ARMA personally<br>
-        2. Sit-down with ARMA fleet manager this week — not a call<br>
-        3. Confirm Hino box truck diagnostic capability and communicate<br>
-        4. Use repeat VINs as PM agreement pitch anchors
+        1. Senior Kooner contact must call ORMP directly — acknowledge the grounding event<br>
+        2. Restructure van PM scheduling at HTP2 to guarantee same-day or next-day turnaround<br>
+        3. SM reschedulings at 13 — identify whether tech availability, WO intake, or parts are the cause<br>
+        4. Set a formal PM SLA commitment to ORMP in writing
+      </div>
+    </div>
+
+    <div class="station-card critical">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div class="station-name">HDT3 <span style="font-size:13px;color:var(--red);">QUALITY RISK</span></div>
+          <div class="station-meta">43 Kooner WOs · 0.61d Med TAT · SFRM survey — 2 safety failures</div>
+        </div>
+        <span class="tag tag-red">CRITICAL · SAFETY FAILURES</span>
+      </div>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> SFRM submitted a JotForm survey (WK13) rating satisfaction 2/5 and timeliness 2/5. Two safety quality failures documented: (1) Unit 4812 — tech broke two rear lug studs during repair, replaced one, left the other unresolved over the weekend without communicating. (2) Unit 2974 — tech declared steering roadworthy, vehicle taken to shop next day with king pins tied up. This is the second such steering incident. SFRM also flagged unfamiliarity with Kooner's tire change WO workflow. TAT at HDT3 is excellent (0.61d) — this is not a speed problem, it is a quality and communication problem creating liability.</p>
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        1. David Ross must address directly with the specific tech(s) involved at HDT3<br>
+        2. Implement a pre-release vehicle inspection checklist at HDT3<br>
+        3. Clarify tire change WO workflow with SFRM — provide written process<br>
+        4. Follow up with SFRM fleet manager — acknowledge both incidents specifically
+      </div>
+    </div>
+
+    <div class="station-card critical">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div class="station-name">HIN3 <span style="font-size:13px;color:var(--red);">0 WOs</span></div>
+          <div class="station-meta">0 Kooner WOs · Severance absent · JBXL leakage continues</div>
+        </div>
+        <span class="tag tag-red">CRITICAL · NO COVERAGE</span>
+      </div>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> Severance had 3 WOs in WK12 (at 0.08d TAT — excellent) but is not on the WK13 schedule and completed zero WOs this week. Coverage sustainability was never confirmed. A WK12 escalation (HIN3-JBX-592025) documented a vehicle worked on and released with a recurring problem — this quality failure, combined with zero coverage in WK13, means JBXL has no reason to route work to Kooner. This station remains effectively uncovered.</p>
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        1. Confirm Severance's availability and schedule before WK14 — determine if this is a routing or availability failure<br>
+        2. Resolve the WK12 comeback issue (HIN3-JBX-592025) with JBXL directly<br>
+        3. Do not pitch JBXL on PM agreements until coverage is sustained for 2+ consecutive weeks<br>
+        4. If Severance is unavailable, identify backup coverage immediately
+      </div>
+    </div>
+
+    <div class="station-card critical">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div class="station-name">HPD1 <span style="font-size:13px;color:var(--red);">TAT 7.16d ↑</span></div>
+          <div class="station-meta">3 Kooner WOs · Med TAT 7.16d (was 2.58d WK12) · Ward external · JDTC leaking</div>
+        </div>
+        <span class="tag tag-red">CRITICAL · WORSENING</span>
+      </div>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> HPD1 has worsened in Week 2 of external coverage. Ward completed 3 WOs with a 7.16d median TAT — worse than WK12 (2.58d) despite handling the same low volume. 2 of 3 WOs triggered SM reschedulings. This is not a volume or demand problem — it is a structural coverage model failure. JDTC continues to route work elsewhere and has no reason to change given this performance.</p>
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        1. Investigate Ward's equipment access and WO dispatch timing — confirm what is causing 7+ day TAT on 3 WOs<br>
+        2. Set a WK15 target: 0 JDTC leaks, sub-2d TAT. Without improvement by WK15, escalate coverage model decision<br>
+        3. Do not outreach JDTC until coverage is performing — a pitch at 7d TAT will accelerate disengagement
       </div>
     </div>
 
     <div class="station-card high">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
-          <div class="station-name">HDT3 <span style="font-size:13px;color:var(--green);">↓3 vs WK11</span></div>
-          <div class="station-meta">6 ROs lost · SFRM (6) · PM-heavy (4 of 6) · Hino + Ford</div>
+          <div class="station-name">HMS2</div>
+          <div class="station-meta">7 Kooner WOs · 1.00d Med TAT · LDOG engagement remains key</div>
         </div>
-        <span class="tag tag-orange">HIGH · IMPROVING</span>
+        <span class="tag tag-orange">HIGH · LOW VOLUME</span>
       </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> Volume dropped from 9 to 6 — a positive signal, but SFRM is still routing all their work away from Kooner. 4 of 6 are PM or PM combo visits, confirming SFRM has a standing maintenance relationship elsewhere. If a face-to-face with SFRM was scheduled last week, the outreach may be working.</p>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> Volume held at 7 WOs (down from 9 in WK12). TAT is solid at 1.00d. HMS2's recovery trajectory depends almost entirely on LDOG — if LDOG begins routing more work to Kooner, this station will show significant volume improvement. With Fowler now primarily at HCT2, DeMello is the primary tech. Confirm staffing is adequate for the WO mix LDOG would bring.</p>
       <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
       <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. Follow up on the SFRM face-to-face — get a commitment on PM routing<br>
-        2. Confirm air brake / DOT cert capability and communicate<br>
-        3. Propose a PM schedule for SFRM's Hino and Ford fleet
-      </div>
-    </div>
-
-    <div class="station-card high">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div class="station-name">HCL2 <span style="font-size:13px;color:var(--gray);">→ flat vs WK11</span></div>
-          <div class="station-meta">5 ROs lost · DGWD (3), D4DS (2) · Mix of null + NON-PM</div>
-        </div>
-        <span class="tag tag-orange">HIGH · NO IMPROVEMENT</span>
-      </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> HCL2 held flat at 5 ROs — no improvement. DGWD is now the lead DSP (3 ROs, up from 2). D4DS still leaking despite a 5/5 sentiment score. The null descriptions continue to mask repair types. HVAC was the primary WK11 leak type — confirm whether that capability issue has been addressed.</p>
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. Direct outreach to DGWD — identify what is driving the leakage<br>
-        2. Confirm HVAC coverage at HCL2 and communicate to both DSPs<br>
-        3. With D4DS (5/5 sentiment) — ask specifically why these ROs are going elsewhere
-      </div>
-    </div>
-
-    <div class="station-card high">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div class="station-name">HMS2 <span style="font-size:13px;color:var(--green);">↓4 vs WK11</span></div>
-          <div class="station-meta">4 ROs lost · LDOG (4) · PM+NON-PM combos · Null descriptions</div>
-        </div>
-        <span class="tag tag-orange">HIGH · IMPROVING</span>
-      </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> Down from 8 to 4 — meaningful improvement but LDOG is still routing all work away. 3 of 4 are PM combo visits. If the LDOG PM pitch was made last week, this reduction may reflect early traction. Keep pressure on.</p>
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. Follow up with LDOG — reinforce PM schedule pitch<br>
-        2. Ask directly what it would take to bring the PM visits to Kooner<br>
-        3. Monitor WK13 — if volume stays at 4 or drops further, outreach is working
-      </div>
-    </div>
-
-    <div class="station-card high">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div class="station-name">HTP2 <span style="font-size:13px;color:var(--red);">↑2 vs WK11</span></div>
-          <div class="station-meta">4 ROs lost · ORMP (4, 100%) · All NON-PM · Isuzu-heavy</div>
-        </div>
-        <span class="tag tag-orange">HIGH · NEW CONCERN</span>
-      </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> HTP2 jumped from 2 to 4 ROs, with ORMP accounting for all 4. In WK11 leakage was split across two DSPs (ORMP and ARVL) — now it is concentrated. This is a new pattern worth watching. All reactive repairs on Isuzu units.</p>
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. Check in with ORMP — understand if this is a capability or relationship issue<br>
-        2. Confirm Kooner covers Isuzu units at HTP2<br>
-        3. Monitor WK13 — if ORMP continues at 4+ this needs a recovery plan
+        1. Continue LDOG PM agreement push — volume improvement depends on this relationship<br>
+        2. Confirm HMS2 staffing can absorb LDOG volume growth without TAT regression<br>
+        3. Monitor WK14 — if volume drops below 5, escalate LDOG outreach
       </div>
     </div>
 
     <div class="station-card medium">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
-          <div class="station-name">HDY1 <span style="font-size:13px;color:var(--gray);">→ flat</span></div>
-          <div class="station-meta">3 ROs lost · TLGZ (3) · PM combos · Isuzu + Hino</div>
-        </div>
-        <span class="tag tag-blue">MONITOR</span>
-      </div>
-      <p style="margin-bottom:10px;"><strong>Diagnosis:</strong> Flat at 3. TLGZ now 100% of leakage at HDY1 (up from 2 of 3 last week). PM combos dominant — same pattern as WK11. HVAC capability on Isuzu was the WK11 gap; confirm if that has been communicated.</p>
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
-      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
-        1. Confirm HVAC capability on Isuzu has been communicated to TLGZ<br>
-        2. Warm check-in with TLGZ — near-target station, prevent further drift
-      </div>
-    </div>
-
-    <div class="station-card medium">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div class="station-name">HPD1 &nbsp;·&nbsp; HIN3 <span style="font-size:13px;color:var(--green);">↓5 each</span></div>
-          <div class="station-meta">HPD1: 2 ROs (JDTC) · HIN3: 2 ROs (JBXL) · Significant WK11 improvement</div>
+          <div class="station-name">HLA2</div>
+          <div class="station-meta">38 Kooner WOs · 0.46d Med TAT · SM resched improved 28→12 · ARMA</div>
         </div>
         <span class="tag tag-blue">MONITOR · IMPROVING</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
-        <div>
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">HPD1</div>
-          <p style="font-size:12px;">Down from 7 to 2 — a significant drop. JDTC still leaking but at much lower volume. If the formal recovery meeting happened, early signs are positive. Watch closely — this could be variance. Target: 0 JDTC leaks by WK15.</p>
-        </div>
-        <div>
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">HIN3</div>
-          <p style="font-size:12px;">Down from 7 to 2 — same pattern. JBXL is still routing PM work elsewhere but volume is lower. Follow up on the PM schedule pitch and confirm fleet coverage on mixed vehicle types.</p>
-        </div>
+      <p style="margin-bottom:10px;"><strong>WK13 Signal:</strong> HLA2 TAT remains excellent (0.46d) and SM reschedulings improved significantly from 28 to 12. Volume dipped from 73 to 38 WOs week-over-week — this likely reflects ARMA routing fewer vehicles to Kooner, not a Kooner capacity issue. ARMA remains the critical relationship here. Without the leakage report it is impossible to confirm ARMA's leak volume this week, but the WO count decline is a concern.</p>
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">RECOVERY ACTIONS</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        1. Volume drop (73→38 WOs) needs explanation — confirm whether ARMA is routing fewer vehicles to Kooner<br>
+        2. Follow up on the senior ARMA relationship contact established in WK12 outreach<br>
+        3. Continue PM agreement pitch on repeat VINs — TAT performance is strong, this is the best moment to pitch
       </div>
     </div>
 
     <div class="station-card low">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
         <div>
-          <div class="station-name">HAU1 <span style="font-size:13px;color:var(--green);">✓ 0 ROs</span></div>
-          <div class="station-meta">Zero leakage this week — down from 6 in WK11</div>
+          <div class="station-name">HAU1 <span style="font-size:13px;color:var(--green);">✓ Zero Leakage Holding</span></div>
+          <div class="station-meta">19 Kooner WOs · 1.08d Med TAT · Zero transfer failures (best in network)</div>
         </div>
-        <span class="tag tag-green">RECOVERED THIS WEEK</span>
+        <span class="tag tag-green">RECOVERED · HOLDING</span>
       </div>
-      <p style="margin-bottom:10px;"><strong>WK12 result:</strong> No leaked ROs at HAU1 — a full recovery from 6 last week. The pre-auth dispute resolution and GMIL/FICL outreach appears to have worked. Keep the relationship warm and monitor through WK14 to confirm this is sustained and not just variance.</p>
-      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">MAINTENANCE</div>
-      <div style="font-size:12px;color:var(--text-secondary);">Monitor WK13–WK14 to confirm recovery holds. Keep GMIL and FICL warm.</div>
-    </div>
-
-    <div class="station-card low">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div class="station-name">HSL1 &nbsp;·&nbsp; HHO3 <span style="font-size:13px;color:var(--red);">NEW</span></div>
-          <div class="station-meta">HSL1: 1 RO (PRLC) · HHO3: 1 RO (RRTL) · Both new in WK12</div>
-        </div>
-        <span class="tag tag-green">LOW · WATCH</span>
-      </div>
-      <p style="font-size:12px;">Both stations had zero leakage in WK11. Single-RO events — likely variance, but flag for WK13 monitoring. HSL1 was previously on-target (91.2%). If leakage recurs at either station, investigate DSP relationship.</p>
+      <p style="font-size:12px;">HAU1 maintained zero leakage for a second consecutive week. TAT solid at 1.08d with zero transfer failures — best in network. All WOs are box truck this week (fleet mix shift from prior weeks). Continue monitoring through WK14 to confirm the recovery is structural and not variance. Keep GMIL and FICL warm.</p>
     </div>
 
   </div>
 
-  <div class="section-label" style="margin-top:32px;">DSP Relationship Status — WK12</div>
+  <div class="section-label" style="margin-top:32px;">DSP Relationship Status — WK13</div>
 
-  <div class="callout callout-blue" style="margin-bottom:20px;">
-    DSPs are choosing other FMC-approved vendors over Kooner. Update the status column as outreach progresses each week. <strong>WK12 key shift: ARMA doubled — now the single most urgent relationship in the portfolio.</strong>
+  <div class="callout callout-yellow" style="margin-bottom:20px;">
+    No leakage report available. Status updates below reflect WBR survey data, JotForm DSP responses, and WO volume signals. RO counts are from WK12 (last confirmed data).
   </div>
 
   <div class="card">
-    <div class="card-title">🔴 Priority DSPs — 32 of 48 Leaked ROs (67%)</div>
+    <div class="card-title">🔴 Priority DSPs — WK13 Signal</div>
     <table>
       <thead>
         <tr>
-          <th>DSP</th><th>Station</th><th>WK12 ROs</th><th>vs WK11</th><th>Primary Leak Type</th><th>Root Cause Hypothesis</th><th>Relationship Status</th>
+          <th>DSP</th><th>Station</th><th>Last Known ROs (WK12)</th><th>WK13 Signal</th><th>Risk Level</th><th>Relationship Status</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><strong>ARMA</strong></td><td>HLA2</td>
-          <td style="font-weight:700;color:var(--red);">20</td>
-          <td style="font-weight:700;color:var(--red);">↑11</td>
-          <td>PM + Engine/Diag + NON-PM</td>
-          <td>Full disconnection — active maintenance relationship with another vendor</td>
+        <tr style="background:var(--red-light);">
+          <td><strong>ORMP</strong></td><td>HTP2</td>
+          <td style="font-weight:700;color:var(--red);">4</td>
+          <td>Vehicle grounded by Amazon · PM TAT 4.6d avg · 1/5 timeliness · Contract-risk event</td>
+          <td><span class="tag tag-red">CONTRACT RISK</span></td>
+          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
+        </tr>
+        <tr style="background:var(--red-light);">
+          <td><strong>SFRM</strong></td><td>HDT3</td>
+          <td style="font-weight:700;color:var(--orange);">6</td>
+          <td>2 safety quality failures · 2/5 satisfaction · Lug stud + king pin incidents</td>
+          <td><span class="tag tag-red">QUALITY RISK</span></td>
           <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
         </tr>
         <tr>
-          <td><strong>SFRM</strong></td><td>HDT3</td>
-          <td style="font-weight:700;color:var(--orange);">6</td>
-          <td style="color:var(--green);font-weight:700;">↓3</td>
-          <td>PM combos, Brakes</td>
-          <td>Capability gap — standing PM relationship elsewhere</td>
+          <td><strong>JBXL</strong></td><td>HIN3</td>
+          <td style="font-weight:700;color:var(--orange);">2</td>
+          <td>Zero Kooner WOs at HIN3 · WK12 comeback escalation unresolved · Leakage likely continuing</td>
+          <td><span class="tag tag-red">CRITICAL</span></td>
+          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
+        </tr>
+        <tr>
+          <td><strong>JDTC</strong></td><td>HPD1</td>
+          <td style="font-weight:700;color:var(--orange);">2</td>
+          <td>TAT worsened to 7.16d · Coverage model failing · Continued disengagement</td>
+          <td><span class="tag tag-orange">HIGH</span></td>
+          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
+        </tr>
+        <tr>
+          <td><strong>ARMA</strong></td><td>HLA2</td>
+          <td style="font-weight:700;color:var(--red);">20</td>
+          <td>HLA2 WO volume dropped 73→38 · Possible routing reduction · SM resched improved 28→12</td>
+          <td><span class="tag tag-orange">MONITOR</span></td>
           <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
         </tr>
         <tr>
           <td><strong>LDOG</strong></td><td>HMS2</td>
           <td style="font-weight:700;color:var(--orange);">4</td>
-          <td style="color:var(--green);font-weight:700;">↓4</td>
-          <td>PM+NON-PM combos</td>
-          <td>Established PM relationship — improving</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>ORMP</strong></td><td>HTP2</td>
-          <td style="font-weight:700;color:var(--orange);">4</td>
-          <td style="color:var(--red);font-weight:700;">↑3</td>
-          <td>NON-PM reactive</td>
-          <td>New concentration — Isuzu capability gap possible</td>
+          <td>HMS2 volume held at 7 WOs · Relationship engagement is the primary volume lever</td>
+          <td><span class="tag tag-orange">HIGH</span></td>
           <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
         </tr>
       </tbody>
@@ -627,64 +614,36 @@ strong { font-weight: 700; color: var(--text-primary); }
   </div>
 
   <div class="card">
-    <div class="card-title">🟠 Secondary DSPs — 16 of 48 Leaked ROs</div>
+    <div class="card-title">✅ HAU1 — Recovered DSPs (WK12–WK13)</div>
     <table>
-      <thead>
-        <tr><th>DSP</th><th>Station</th><th>WK12 ROs</th><th>vs WK11</th><th>Note</th><th>Status</th></tr>
-      </thead>
+      <thead><tr><th>DSP</th><th>Station</th><th>Recovery Status</th><th>WK13 Signal</th><th>Maintenance</th></tr></thead>
       <tbody>
-        <tr>
-          <td><strong>DGWD</strong></td><td>HCL2</td><td>3</td><td style="color:var(--red);">↑1</td>
-          <td>Now lead DSP at HCL2 — outreach needed</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
+        <tr style="background:var(--green-light);">
+          <td><strong>GMIL</strong></td><td>HAU1</td>
+          <td><span class="tag tag-green">RECOVERED</span></td>
+          <td>Zero leakage WK12 + WK13 · 19 Kooner WOs · Zero transfer failures</td>
+          <td><select class="status-select"><option>🟢 Engaged</option><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>✅ Recovered</option></select></td>
         </tr>
-        <tr>
-          <td><strong>TLGZ</strong></td><td>HDY1</td><td>3</td><td style="color:var(--gray);">→</td>
-          <td>100% of HDY1 leakage — HVAC on Isuzu still not resolved</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>D4DS</strong></td><td>HCL2</td><td>2</td><td style="color:var(--red);">↓1</td>
-          <td>5/5 sentiment — capability routing, still not resolved</td>
-          <td><select class="status-select"><option>🟢 Engaged</option><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>JDTC</strong></td><td>HPD1</td><td>2</td><td style="color:var(--green);font-weight:700;">↓5</td>
-          <td>Significant improvement — recovery meeting may be working</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>JBXL</strong></td><td>HIN3</td><td>2</td><td style="color:var(--green);font-weight:700;">↓4</td>
-          <td>Improving — follow up on PM pitch</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>PRLC</strong></td><td>HSL1</td><td>1</td><td style="color:var(--red);">NEW</td>
-          <td>New — single RO, monitor WK13</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
-        </tr>
-        <tr>
-          <td><strong>RRTL</strong></td><td>HHO3</td><td>1</td><td style="color:var(--red);">NEW</td>
-          <td>New — single RO, monitor WK13</td>
-          <td><select class="status-select"><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>🟠 Meeting scheduled</option><option>🟢 Engaged</option><option>✅ Recovered</option></select></td>
+        <tr style="background:var(--green-light);">
+          <td><strong>FICL</strong></td><td>HAU1</td>
+          <td><span class="tag tag-green">RECOVERED</span></td>
+          <td>Pre-auth dispute resolved · No recurrence · HAU1 holding</td>
+          <td><select class="status-select"><option>🟢 Engaged</option><option>🔴 Not contacted</option><option>🟡 Outreach sent</option><option>✅ Recovered</option></select></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="card">
-    <div class="card-title">⚠️ Repeat-Vehicle Targets — 7 VINs with Multiple Appearances in WK12</div>
-    <p style="margin-bottom:14px;">All 7 are ARMA vehicles at HLA2 — concentrated PM agreement opportunity. Bringing even 2–3 under a Kooner agreement converts recurring leakage into predictable revenue.</p>
+    <div class="card-title">⚠️ Repeat-Vehicle Targets — Carry Forward from WK12 (Pending WK13 Report)</div>
+    <p style="margin-bottom:14px;">WK12 identified 7 repeat VINs (all ARMA at HLA2). Without a WK13 leakage report, these remain active targets. If any of the ARMA VINs are still being serviced by outside vendors, they represent recurring PM agreement opportunities.</p>
     <table>
-      <thead><tr><th>VIN (Last 8)</th><th>Type</th><th>Appearances</th><th>Station</th><th>DSP</th><th>PM Agreement Status</th></tr></thead>
+      <thead><tr><th>VIN (Last 8)</th><th>Type</th><th>Appearances (WK12)</th><th>Station</th><th>DSP</th><th>PM Agreement Status</th></tr></thead>
       <tbody>
         <tr><td><strong>...T50223</strong></td><td>Hino Box Truck</td><td style="font-weight:700;color:var(--red);">4×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
         <tr><td><strong>...T50187</strong></td><td>Hino Box Truck</td><td style="font-weight:700;color:var(--red);">3×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
         <tr><td><strong>...KA55535</strong></td><td>Ford Transit CDV</td><td style="font-weight:700;color:var(--red);">3×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
         <tr><td><strong>...L7303810</strong></td><td>Isuzu CV</td><td style="font-weight:700;color:var(--orange);">3×</td><td>HTP2</td><td>ORMP</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
-        <tr><td><strong>...S59729</strong></td><td>Hino Box Truck</td><td style="font-weight:700;">2×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
-        <tr><td><strong>...S80576</strong></td><td>Hino Box Truck</td><td style="font-weight:700;">2×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
-        <tr><td><strong>...S59790</strong></td><td>Hino Box Truck</td><td style="font-weight:700;">2×</td><td>HLA2</td><td>ARMA</td><td><select class="status-select"><option>🔴 Not pitched</option><option>🟡 Pitched</option><option>🟢 Agreement in place</option></select></td></tr>
       </tbody>
     </table>
   </div>
@@ -693,138 +652,344 @@ strong { font-weight: 700; color: var(--text-primary); }
 
 <!-- ═══════════════════════════════════════════════ -->
 <!-- ═══════════════════════════════════════════════ -->
-<!-- TAB: OPERATIONAL ACTIONS (incl. Capability Gaps) -->
+<!-- TAB: OPEN OPERATIONAL ITEMS -->
 <!-- ═══════════════════════════════════════════════ -->
 <div id="ops_actions" class="tab-content">
 
-  <div class="section-label">Operational Actions — WK12</div>
+  <div class="section-label">Open Operational Items — WK13</div>
   <div class="callout callout-blue" style="margin-bottom:20px;">
-    Execution-level tasks and capability status. Owned by field and account management. Target completion within 1–3 weeks.
+    Items below are open issues that Ops owns and must resolve. Each is organized by priority, the underlying problem, what action is required, who is responsible, and what follow-up is needed to close it. Strategy and investment decisions live in the Strategic Actions tab — everything here is execution.
   </div>
 
-  <!-- Capability Gap Status Cards -->
-  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:12px;">🔧 Capability Gap Status</div>
-  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">These gaps are driving leakage across multiple stations. DSP outreach on these repair types cannot succeed until the underlying capability is confirmed or added.</p>
-  <div class="grid-3" style="margin-bottom:28px;">
-    <div class="card" style="border-top:4px solid var(--red);margin-bottom:0;">
-      <div class="card-title">🔍 Engine / Diagnostics</div>
-      <div style="font-size:28px;font-weight:800;color:var(--red);margin-bottom:4px;">5 ROs</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">HLA2 (5) — all ARMA, all Hino</div>
-      <p style="margin-bottom:12px;">New WK12 gap — ARMA is routing CEL and engine diagnostics on Hino box trucks elsewhere. Confirm scan tool capability and trained tech for Hino diagnostics at HLA2.</p>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
-      <select class="status-select" style="width:100%;">
-        <option>🔴 Gap not addressed</option>
-        <option>🟡 Assessing capability</option>
-        <option>🟠 Adding tech / certification</option>
-        <option>🟢 Capability confirmed</option>
-        <option>✅ Communicated to DSPs</option>
-      </select>
+  <!-- TIER 1: CONTRACT & SAFETY -->
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);margin-bottom:12px;">🔴 Tier 1 — Contract & Safety Risk · Resolve This Week</div>
+
+  <!-- ORMP Vehicle Grounding -->
+  <div class="card" style="border-left:4px solid var(--red);margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">ORMP / HTP2 — Vehicle Grounded by Amazon</div>
+        <div style="font-size:12px;color:var(--text-muted);">HTP2 · Van PM TAT · Contract risk · ORMP JotForm survey 3/30</div>
+      </div>
+      <span class="tag tag-red">CONTRACT RISK</span>
     </div>
-    <div class="card" style="border-top:4px solid var(--red);margin-bottom:0;">
-      <div class="card-title">🔧 Brakes / Air Systems</div>
-      <div style="font-size:28px;font-weight:800;color:var(--red);margin-bottom:4px;">5 ROs</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">HDT3 (1), HDY1 (1), HHO3 (1), other (2)</div>
-      <p style="margin-bottom:12px;">Persists from WK11. DOT-adjacent air brake work on Hino trucks. Confirm certification at HDT3 and communicate directly to SFRM — this was already flagged last week.</p>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
-      <select class="status-select" style="width:100%;">
-        <option>🔴 Gap not addressed</option>
-        <option>🟡 Assessing capability</option>
-        <option>🟠 Adding tech / certification</option>
-        <option>🟢 Capability confirmed</option>
-        <option>✅ Communicated to DSPs</option>
-      </select>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Van PM submitted 3/23 not completed until 3/30 despite 3 escalations. Amazon grounded the vehicle. ORMP's average van PM TAT in March was 4.6 days — against 300-mile daily routes with a 1,000-mile PM window. At that route density, PM is already overdue before Kooner completes it. HTP2 SM reschedulings hit 13 this week — station record. ORMP rated timeliness 1/5.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Senior Kooner contact calls ORMP this week — acknowledge the grounding, own the failure<br>
+          2. Restructure van PM scheduling at HTP2 — same-day or next-day turnaround, non-negotiable<br>
+          3. Investigate SM reschedulings (13) — identify whether tech availability, WO intake, or parts is the bottleneck<br>
+          4. Deliver a written PM SLA to ORMP with a named escalation contact
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> David Ross + Sr. Leadership<br>
+          <strong>Due:</strong> Call this week · SLA delivered by WK14<br>
+          <strong>Confirm:</strong> No vehicles have exceeded PM window since 3/30<br>
+          <strong>Close when:</strong> ORMP confirms SLA received · WK14 van PM TAT ≤ 1 day · SM reschedulings ≤ 5
+        </div>
+      </div>
     </div>
-    <div class="card" style="border-top:4px solid var(--green);margin-bottom:0;">
-      <div class="card-title">🌡️ HVAC</div>
-      <div style="font-size:28px;font-weight:800;color:var(--green);margin-bottom:4px;">0 ROs</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Down from 8 ROs in WK11</div>
-      <p style="margin-bottom:12px;">No HVAC leakage in WK12 — positive signal. Confirm whether this reflects resolved capability or simply no HVAC demand this week. Communicate capability to HCL2 and HDY1 DSPs regardless.</p>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
-      <select class="status-select" style="width:100%;">
-        <option>🟡 Assessing capability</option>
-        <option>🔴 Gap not addressed</option>
-        <option>🟠 Adding tech / certification</option>
-        <option>🟢 Capability confirmed</option>
-        <option>✅ Communicated to DSPs</option>
-      </select>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 Not addressed</option>
+      <option>🟡 ORMP contacted</option>
+      <option>🟠 SLA drafted, scheduling restructure in progress</option>
+      <option>🟢 SLA delivered to ORMP</option>
+      <option>✅ WK14 TAT confirmed ≤ 1d</option>
+    </select>
+  </div>
+
+  <!-- SFRM Safety Failures -->
+  <div class="card" style="border-left:4px solid var(--red);margin-bottom:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">SFRM / HDT3 — Two Safety Quality Failures</div>
+        <div style="font-size:12px;color:var(--text-muted);">HDT3 · Vehicle safety · Liability risk · SFRM JotForm survey WK13</div>
+      </div>
+      <span class="tag tag-red">SAFETY / LIABILITY</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Two separate failures in one survey: (1) Unit 4812 — tech broke two rear lug studs, replaced one, left the second unresolved over the weekend without disclosing the incomplete repair. (2) Unit 2974 — tech declared steering roadworthy; shop found king pins tied up the next day. This is the second such steering incident at HDT3. SFRM rated satisfaction 2/5. TAT at HDT3 is excellent (0.61d) — this is not a speed problem. It is an undisclosed incomplete repair and a safety clearance failure.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. David Ross addresses both incidents directly with the specific tech(s) at HDT3 — not a team reminder, a named accountability conversation<br>
+          2. Implement a pre-release multi-point inspection checklist at HDT3 — documented sign-off before any vehicle is returned to service<br>
+          3. Clarify tire change WO workflow with SFRM in writing — they flagged unfamiliarity with the process<br>
+          4. Call SFRM fleet manager — acknowledge both incidents by name, not generically
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> David Ross (tech) · Brooke (SFRM relationship)<br>
+          <strong>Due:</strong> Tech conversation this week · SFRM call by WK14<br>
+          <strong>Confirm:</strong> Pre-release checklist is live at HDT3<br>
+          <strong>Close when:</strong> Checklist in use · SFRM satisfaction score improves · No repeat safety incidents in WK14
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 Not addressed</option>
+      <option>🟡 Tech conversation scheduled</option>
+      <option>🟠 Checklist drafted · SFRM contacted</option>
+      <option>🟢 Checklist live · SFRM acknowledged</option>
+      <option>✅ No repeat incidents WK14</option>
+    </select>
+  </div>
+
+  <!-- TIER 2: COVERAGE GAPS -->
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--orange);margin-bottom:12px;">🟠 Tier 2 — Coverage Failures · Resolve by WK14</div>
+
+  <!-- HIN3 -->
+  <div class="card" style="border-left:4px solid var(--orange);margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">HIN3 — Zero WOs · Severance Absent</div>
+        <div style="font-size:12px;color:var(--text-muted);">HIN3 · Coverage sustainability · JBXL leakage continuing</div>
+      </div>
+      <span class="tag tag-orange">COVERAGE FAILURE</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Severance completed 3 WOs in WK12 at an excellent 0.08d TAT, but is not on the WK13 schedule and delivered zero WOs. A WK12 escalation from JBXL (HIN3-JBX-592025) documented a vehicle released with a recurring problem. HIN3 is effectively still uncovered — one week of WOs does not constitute sustained coverage.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Confirm Severance's WK14 availability — is this a scheduling gap or a departure signal?<br>
+          2. Resolve the WK12 comeback issue with JBXL directly before re-pitching any PM agreements<br>
+          3. If Severance is unavailable, identify backup coverage for WK14 before the week starts<br>
+          4. Do not contact JBXL until coverage is confirmed stable for 2+ consecutive weeks
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> David Ross / Brooke<br>
+          <strong>Due:</strong> Severance confirmation before WK14 start<br>
+          <strong>Confirm:</strong> WO intake is set up and routing to Severance<br>
+          <strong>Close when:</strong> 2 consecutive weeks of WOs at HIN3 · comeback issue resolved with JBXL
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 Not confirmed</option>
+      <option>🟡 Severance contacted</option>
+      <option>🟠 WK14 schedule confirmed</option>
+      <option>🟢 WOs routing in WK14</option>
+      <option>✅ 2 consecutive weeks confirmed</option>
+    </select>
+  </div>
+
+  <!-- HPD1 -->
+  <div class="card" style="border-left:4px solid var(--orange);margin-bottom:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">HPD1 — Coverage Model Failing · TAT 7.16d</div>
+        <div style="font-size:12px;color:var(--text-muted);">HPD1 · Ward (external) · JDTC disengaged · WK15 decision point</div>
+      </div>
+      <span class="tag tag-orange">COVERAGE MODEL FAILURE</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Ward (external) completed 3 WOs with a 7.16d median TAT — worsening from 2.58d in WK12. 2 of 3 WOs triggered SM reschedulings. Low WO volume rules out demand pressure as the cause. This is a structural coverage model failure: Ward likely has inadequate equipment access, inconsistent WO dispatch, or both. JDTC has no incentive to route work to Kooner at 7d TAT.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Investigate Ward's equipment access — confirm tools, parts availability, and physical access to vehicles at HPD1<br>
+          2. Review WO dispatch timing — are WOs reaching Ward promptly or sitting in a queue?<br>
+          3. Determine whether this model is fixable in WK14 or whether a different coverage approach is needed<br>
+          4. Do not outreach JDTC until TAT is below 2d — a pitch at 7d accelerates disengagement
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> David Ross / Brooke<br>
+          <strong>Decision date:</strong> WK15 — if TAT does not improve to sub-2d, coverage model must change<br>
+          <strong>Confirm:</strong> Root cause of 7d TAT on 3 WOs identified<br>
+          <strong>Close when:</strong> WK14 TAT &lt; 2d on 3+ WOs · JDTC re-engagement path defined
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 Root cause unknown</option>
+      <option>🟡 Investigation underway</option>
+      <option>🟠 Equipment / dispatch fix in progress</option>
+      <option>🟢 WK14 TAT improving</option>
+      <option>✅ Sub-2d TAT confirmed WK14</option>
+    </select>
+  </div>
+
+  <!-- TIER 3: DSP RELATIONSHIP & VOLUME -->
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);margin-bottom:12px;">🔵 Tier 3 — DSP Relationship & Volume · Monitor and Progress</div>
+
+  <!-- ARMA Volume Drop -->
+  <div class="card" style="border-left:4px solid var(--blue);margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">HLA2 / ARMA — WO Volume Drop 73→38</div>
+        <div style="font-size:12px;color:var(--text-muted);">HLA2 · ARMA routing · No leakage report to confirm · WK12 repeat VINs still unpitched</div>
+      </div>
+      <span class="tag tag-blue">MONITOR</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Kooner WOs at HLA2 dropped from 73 to 38 week-over-week. TAT remains excellent (0.46d) and SM reschedulings improved (28→12) — so this is not a performance issue. Without the leakage report it cannot be confirmed whether ARMA is routing more work to competing vendors. The WK12 repeat VINs (ARMA, 7 vehicles) have not been pitched for PM agreements.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Confirm with the senior ARMA contact whether the WO drop reflects routing to another vendor or a natural volume fluctuation<br>
+          2. Pitch PM agreements on the 7 WK12 repeat VINs — HLA2 TAT at 0.46d is the strongest pitch context available<br>
+          3. Ensure the ARMA relationship contact established in WK12 is being maintained with regular check-ins
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> Brooke<br>
+          <strong>Due:</strong> ARMA check-in this week · PM pitch by WK14<br>
+          <strong>Confirm:</strong> WK14 leakage report shows HLA2 ARMA ROs<br>
+          <strong>Close when:</strong> PM agreement on ≥1 repeat VIN · Volume trend explained
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 Not contacted</option>
+      <option>🟡 ARMA check-in completed</option>
+      <option>🟠 PM pitch in progress</option>
+      <option>🟢 Volume explanation confirmed</option>
+      <option>✅ PM agreement in place</option>
+    </select>
+  </div>
+
+  <!-- LDOG / HMS2 -->
+  <div class="card" style="border-left:4px solid var(--blue);margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">HMS2 / LDOG — Volume Stalled at 7 WOs</div>
+        <div style="font-size:12px;color:var(--text-muted);">HMS2 · LDOG PM agreement · Relationship engagement is the primary lever</div>
+      </div>
+      <span class="tag tag-blue">IN PROGRESS</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">HMS2 volume held flat at 7 WOs for the second consecutive week. TAT is solid at 1.00d. LDOG remains the primary DSP whose work would move the needle — they have an established PM relationship with another vendor and have been slow to shift volume. DeMello is the primary tech now that Fowler is primarily at HCT2.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Continue LDOG PM agreement push — ask directly what would move the first PM visit to Kooner<br>
+          2. Confirm HMS2 staffing can absorb a LDOG volume increase without TAT regression<br>
+          3. If volume drops below 5 WOs in WK14, escalate LDOG outreach to senior relationship contact
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> Brooke<br>
+          <strong>Due:</strong> LDOG outreach by WK14<br>
+          <strong>Trigger:</strong> If WK14 volume &lt; 5, escalate immediately<br>
+          <strong>Close when:</strong> LDOG routes at least one PM visit to Kooner at HMS2
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:8px;">Status</div>
+    <select class="status-select" style="width:240px;">
+      <option>🔴 No outreach this week</option>
+      <option>🟡 LDOG contacted</option>
+      <option>🟠 PM pitch in progress</option>
+      <option>🟢 LDOG committed to trial PM</option>
+      <option>✅ First LDOG PM at HMS2 completed</option>
+    </select>
+  </div>
+
+  <!-- HAU1 Maintenance -->
+  <div class="card" style="border-left:4px solid var(--green);margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">HAU1 — Recovered · Monitor for Structural Confirmation</div>
+        <div style="font-size:12px;color:var(--text-muted);">HAU1 · GMIL + FICL · Zero leakage WK12–WK13 · Pre-auth resolution holding</div>
+      </div>
+      <span class="tag tag-green">HOLDING</span>
+    </div>
+    <div class="grid-3">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Current State</div>
+        <p style="font-size:12px;">Second consecutive week of zero leakage. 19 Kooner WOs at 1.08d TAT. Zero transfer failures — best in network. The pre-auth dispute resolution (FICL, RO 85716234) and GMIL outreach from WK11 appear to have held. HAU1 is now all-box truck (fleet mix shift this week).</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Keep GMIL and FICL warm — periodic check-in, no formal outreach needed<br>
+          2. Monitor fleet mix shift (all-box) — confirm staffing is appropriate for the current WO type<br>
+          3. Flag immediately if WK14 shows any leakage recurrence
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> Brooke<br>
+          <strong>Due:</strong> WK14 leakage report review<br>
+          <strong>Close when:</strong> WK15 shows third consecutive zero-leakage week — then consider structural
+        </div>
+      </div>
     </div>
   </div>
 
-  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);margin-bottom:12px;">✅ Action Checklist</div>
-
-  <div class="card" style="margin-bottom:16px;">
-    <div class="card-title" style="color:var(--red);">🔴 This Week — Do Now</div>
-
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:4px;">ARMA / HLA2 — Urgent</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HLA2 · ARMA:</strong> Escalate to Kooner senior leadership — ARMA jumped from 9 to 20 ROs in one week. This requires a personal visit from a senior contact, not a dispatcher call</div>
+  <!-- WK14 Leakage Report -->
+  <div class="card" style="border-left:4px solid var(--purple);margin-bottom:0;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light);">
+      <div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:2px;">WK13 Leakage Report — Not Provided</div>
+        <div style="font-size:12px;color:var(--text-muted);">Amazon · Escalation needed if WK14 report also missing</div>
+      </div>
+      <span class="tag tag-purple">ESCALATE IF MISSING AGAIN</span>
     </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HLA2 · ARMA:</strong> Confirm Hino engine diagnostic capability at HLA2 — 5 of 20 leaked ROs are diagnostics on Hino box trucks</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HLA2 · ARMA:</strong> Use the 7 repeat VINs as PM agreement pitch anchors — these vehicles are in an active cycle with another vendor. Present a ready-built PM schedule</div>
-    </div>
-
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:16px;">New Concerns</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HTP2 · ORMP:</strong> Check in with ORMP — 4 ROs all from one DSP on Isuzu units is a new pattern. Confirm Isuzu coverage and identify if there was a service friction point</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HCL2 · DGWD:</strong> Outreach to DGWD — now the primary leaking DSP at HCL2 with 3 ROs. Identify root cause before HVAC season arrives</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:16px;">
-    <div class="card-title" style="color:var(--orange);">🟠 Next 2–3 Weeks — Follow Up</div>
-
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:4px;">Recovery Follow-Ups</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HDT3 · SFRM:</strong> Follow up on face-to-face — get a specific commitment on PM routing for SFRM's Hino and Ford fleet</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HMS2 · LDOG:</strong> Reinforce PM schedule pitch — volume dropped from 8 to 4, outreach may be working. Lock in a PM agreement before it drifts back up</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HPD1 · JDTC:</strong> Follow up on recovery meeting — volume dropped from 7 to 2. Positive signal. Set a measurable WK15 target (e.g. 0 JDTC leaks)</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HIN3 · JBXL:</strong> Follow up on PM schedule proposal — volume dropped from 7 to 2. Confirm fleet coverage for mixed vehicle types</div>
-    </div>
-
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:16px;">Capability Communication</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HDT3 · SFRM:</strong> Confirm air brake / DOT cert — communicate directly to SFRM if not done in WK11</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HCL2 / HDY1:</strong> Confirm HVAC capability and communicate to DGWD, D4DS, and TLGZ — no HVAC leakage in WK12 but cap season is approaching</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title" style="color:var(--blue);">🔵 Ongoing Maintenance</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HAU1:</strong> Monitor through WK14 to confirm zero-leakage recovery holds — keep GMIL and FICL warm</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>HSL1 / HHO3:</strong> Monitor WK13 — single-RO events, likely variance. Investigate if leakage recurs</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>WK13 Review:</strong> Pull leakage report — measure vs WK12 baseline (48 ROs). Target: HLA2 improvement, HTP2 stabilized, HMS2 continued decline</div>
+    <div class="grid-3">
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">The Problem</div>
+        <p style="font-size:12px;">Amazon did not provide the WK13 leakage report. Without it, recovery progress on ARMA, SFRM, LDOG, JDTC, and JBXL cannot be confirmed. This dashboard was rebuilt from WBR signal data this week — a reasonable workaround, but not a substitute for the actual leakage RO data.</p>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">What Ops Must Do</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          1. Confirm WK14 leakage report is received and uploaded when available<br>
+          2. If WK14 report is also missing, escalate through Kelsea Griffin (RFM) or Shoun Collins (L7)<br>
+          3. Note the gap in WBR — two consecutive missing reports should be flagged to Amazon program contacts
+        </div>
+      </div>
+      <div style="padding:12px;background:var(--bg);border-radius:8px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:6px;">Follow-Up Required</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          <strong>Owner:</strong> Brooke<br>
+          <strong>Due:</strong> WK14 report expected Monday<br>
+          <strong>Escalate to:</strong> Kelsea Griffin (RFM) if missing again<br>
+          <strong>Close when:</strong> WK14 report received and dashboard updated
+        </div>
+      </div>
     </div>
   </div>
 
@@ -834,7 +999,7 @@ strong { font-weight: 700; color: var(--text-primary); }
 <!-- ═══════════════════════════════════════════════ -->
 <div id="strategy_actions" class="tab-content">
 
-  <div class="section-label">Strategic Actions — WK12</div>
+  <div class="section-label">Strategic Actions — WK13</div>
   <div class="callout callout-yellow" style="margin-bottom:20px;">
     These are investment and capability decisions that require planning, resources, or leadership sign-off. They set the conditions for long-term growth and cannot be solved by a phone call alone.
   </div>
@@ -842,30 +1007,24 @@ strong { font-weight: 700; color: var(--text-primary); }
   <div class="card" style="margin-bottom:16px;">
     <div class="card-title" style="color:var(--red);">🔴 High Impact — Decide Now</div>
 
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:4px;">HLA2 / ARMA — Structural Fix</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:4px;">HTP2 / ORMP — Contract Risk</div>
     <div class="action-item">
       <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>Assign a senior Kooner owner to ARMA permanently.</strong> ARMA has now doubled week-over-week to 20 ROs — 42% of all leakage. This is not a DSP outreach task, it is a key account management decision. Someone at Kooner needs to own this relationship personally and be accountable for its recovery.</div>
+      <div class="action-text"><strong>Restructure HTP2 van PM scheduling as a formal SLA commitment.</strong> ORMP's 4.6d avg PM TAT vs a 1,000-mile service window is not an optimization problem — it is a structural mismatch. Van PMs must be scheduled same-day or next-day. The vehicle grounding is a contract-risk event; if it recurs, Amazon will pull Kooner from HTP2.</div>
     </div>
     <div class="action-item">
       <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>Confirm Hino engine diagnostic capability at HLA2.</strong> 5 of 20 ARMA ROs are CEL and engine diagnostic work on Hino box trucks — the capability gap is likely contributing to ARMA routing work elsewhere. This needs to be assessed and communicated before the ARMA relationship conversation.</div>
-    </div>
-
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:16px;">HVAC Capability — Summer Readiness</div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>Confirm HVAC certification status at HDT3 and HCL2 before summer.</strong> HVAC leakage was 0 in WK12 but was 8 ROs in WK11. Seasonal demand will return — this decision needs to happen now, not reactively. Do Kooner's current techs have HVAC certification? If not, set a timeline.</div>
-    </div>
-    <div class="action-item">
-      <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>If HVAC gap is confirmed — add a certified tech or pursue certification for an existing tech at HDT3 and HCL2.</strong> This is a recurring revenue unlock across at least 4 stations and a summer demand multiplier.</div>
+      <div class="action-text"><strong>Formalize and deliver a PM SLA to ORMP in writing.</strong> A verbal commitment is not sufficient after a vehicle grounding. ORMP needs a written commitment — specific turnaround times, an escalation contact name, and a defined response path if the SLA is at risk of being missed.</div>
     </div>
 
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:16px;">Pre-Authorization Process</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px;margin-top:16px;">HDT3 / SFRM — Safety Quality + Liability</div>
     <div class="action-item">
       <div class="action-check" onclick="toggleCheck(this)"></div>
-      <div class="action-text"><strong>Build a formal pre-auth SOP if not already done.</strong> HAU1 recovered to 0 leakage in WK12 — the FICL dispute resolution worked. Capture that fix as a repeatable process. A clear, written protocol for when to seek pre-auth, how to escalate, and what happens on denial needs to be trained across all stations.</div>
+      <div class="action-text"><strong>Implement a mandatory pre-release vehicle inspection protocol at HDT3.</strong> Two safety failures in one week — a lug stud left unresolved without disclosure, and a vehicle cleared as roadworthy with king pins tied up (second such incident). A tech-level conversation is necessary, but a documented process change is required to prevent recurrence. This also creates a record that Kooner acted.</div>
+    </div>
+    <div class="action-item">
+      <div class="action-check" onclick="toggleCheck(this)"></div>
+      <div class="action-text"><strong>Confirm HVAC certification status at HDT3 and HCL2 before summer.</strong> No HVAC leakage in WK12–WK13 but seasonal demand is approaching. Confirm certification now — this decision cannot be made reactively when demand spikes.</div>
     </div>
   </div>
 
@@ -928,42 +1087,41 @@ strong { font-weight: 700; color: var(--text-primary); }
 <!-- ═══════════════════════════════════════════════ -->
 <div id="strategy" class="tab-content">
 
-  <div class="section-label">Leakage Recovery Strategy — WK12</div>
+  <div class="section-label">Leakage Recovery Strategy — WK13</div>
 
   <div class="card" style="margin-bottom:20px;">
-    <div class="card-title">Executive Summary — WK12</div>
-    <p style="margin-bottom:12px;">Total leakage dropped from 58 to 48 ROs week-over-week — a positive directional signal. However the improvement is uneven: HAU1 fully recovered (↓6), HPD1 and HIN3 improved significantly (↓5 each), and HMS2 is trending in the right direction (↓4). Against that, <strong>HLA2 escalated sharply — ARMA jumped from 9 to 20 ROs</strong>, now accounting for 42% of all leakage. HLA2 alone offsets the progress made elsewhere.</p>
-    <p>The strategic priority for WK13 is singular: <strong>ARMA at HLA2.</strong> Every other station is either improving, stable, or low-volume. ARMA is not — and the 7 repeat VINs confirm they have an active, ongoing maintenance relationship with a competing vendor. A senior Kooner contact needs to own this relationship personally and move this week.</p>
+    <div class="card-title">Executive Summary — WK13</div>
+    <p style="margin-bottom:12px;">Amazon did not provide a leakage report for WK13, so this week's growth dashboard is built from WBR signal data: Fleet IQ WO counts, JotForm DSP surveys, and operational action items. The adoption rate regressed from 72% to 69% — a directional concern. More urgently, two DSP survey responses reveal issues that go beyond leakage and create direct contract and liability risk.</p>
+    <p><strong>ORMP at HTP2 had a vehicle grounded by Amazon</strong> due to Kooner's PM delay — average van PM TAT in March was 4.6 days against routes that need same-day or next-day service. <strong>SFRM at HDT3 documented two safety quality failures</strong> — a lug stud left unresolved over a weekend without communication, and a vehicle cleared as roadworthy that had king pins tied up (the second such incident at that station). These are not relationship problems or leakage problems. They are liability events. The strategic priority this week is resolving both before they escalate further.</p>
   </div>
 
   <div class="section-label">Execution Timeline</div>
   <div class="timeline-grid" style="margin-bottom:24px;">
     <div class="timeline-col">
-      <div class="timeline-header red">This Week — WK12 Priorities</div>
-      <div class="timeline-item">🚨 Escalate ARMA — senior visit to HLA2</div>
-      <div class="timeline-item">🔍 Confirm Hino diag capability at HLA2</div>
-      <div class="timeline-item">📋 Pitch PM agreements on 7 repeat VINs</div>
-      <div class="timeline-item">📞 Outreach to ORMP (HTP2 — new concern)</div>
-      <div class="timeline-item">📞 Outreach to DGWD (HCL2 — primary DSP)</div>
-      <div class="timeline-item">✅ HAU1 — confirm recovery holds</div>
+      <div class="timeline-header red">This Week — WK13 Priorities</div>
+      <div class="timeline-item">🚨 ORMP — call re: vehicle grounding (HTP2)</div>
+      <div class="timeline-item">⚠️ SFRM — safety failure response (HDT3)</div>
+      <div class="timeline-item">🔧 David Ross — tech intervention at HDT3</div>
+      <div class="timeline-item">📋 Restructure HTP2 van PM scheduling</div>
+      <div class="timeline-item">🔍 Confirm HIN3 Severance availability</div>
+      <div class="timeline-item">📞 HPD1 Ward — investigate TAT 7.16d</div>
     </div>
     <div class="timeline-col">
       <div class="timeline-header orange">Next 2–3 Weeks</div>
-      <div class="timeline-item">🤝 SFRM follow-up — lock in PM commitment</div>
-      <div class="timeline-item">📋 LDOG PM agreement — reinforce pitch (HMS2)</div>
-      <div class="timeline-item">📊 JDTC follow-up — set WK15 target (HPD1)</div>
-      <div class="timeline-item">📋 JBXL PM schedule follow-up (HIN3)</div>
-      <div class="timeline-item">🔧 Confirm brake/DOT cert — communicate to SFRM</div>
-      <div class="timeline-item">🌡️ Communicate HVAC capability before summer</div>
-      <div class="timeline-item">📋 Build pre-auth SOP if not done</div>
+      <div class="timeline-item">📋 HDT3 — pre-release inspection checklist live</div>
+      <div class="timeline-item">📞 LDOG PM agreement push (HMS2)</div>
+      <div class="timeline-item">📊 ARMA WO volume investigation (HLA2)</div>
+      <div class="timeline-item">📋 ARMA repeat VIN PM agreement pitch</div>
+      <div class="timeline-item">🌡️ HVAC capability communicated before summer</div>
+      <div class="timeline-item">📉 Vendor rejection rate — WK15 target sub-3%</div>
     </div>
     <div class="timeline-col">
       <div class="timeline-header blue">30 Days — Strategic</div>
       <div class="timeline-item">🌡️ Add HVAC-certified tech if gap confirmed</div>
       <div class="timeline-item">🚨 Road service feasibility + pilot decision</div>
-      <div class="timeline-item">📋 Launch structured PM agreement program</div>
-      <div class="timeline-item">📊 HPD1 90-day recovery plan — WK14 check-in</div>
-      <div class="timeline-item">📈 WK13 leakage review vs WK12 (48 ROs)</div>
+      <div class="timeline-item">📋 HTP2 PM SLA — verify ORMP satisfaction</div>
+      <div class="timeline-item">📊 HPD1/HIN3 — WK15 coverage decision point</div>
+      <div class="timeline-item">📈 WK14 leakage report — measure vs WK12 (48 ROs)</div>
       <div class="timeline-item">📅 Growth added to WBR standing agenda</div>
     </div>
   </div>
@@ -981,7 +1139,7 @@ strong { font-weight: 700; color: var(--text-primary); }
       </div>
       <div style="padding:14px;background:var(--bg);border-radius:8px;">
         <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Measure progress weekly</div>
-        <p style="font-size:12px;">WK11 baseline: 58 ROs. WK12: 48 ROs — directional improvement. Pull leakage data every Monday and track whether the trend continues. HLA2 must improve in WK13 for the overall number to keep falling.</p>
+        <p style="font-size:12px;">WK11 baseline: 58 ROs. WK12: 48 ROs. WK13: no report. Pull leakage data every Monday — if Amazon continues to withhold, escalate through Kelsea Griffin (RFM). Without the report, service quality signals from DSP surveys become the primary leading indicator.</p>
       </div>
     </div>
   </div>
